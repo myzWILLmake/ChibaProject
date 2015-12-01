@@ -1,17 +1,27 @@
 #APP模块分析
 
 ##数据结构
-###用户 User
+###用户 
+程序中分为两种人物，一种是用户自己 User ， 另一种是其余用户 Person
+这里将User作为Person用户子类
+
 这里列出全部可能用到的的数据类型，实际程序中可能只需要定义一部分，剩下的数据在将来可以通过向服务器数据库随用随调
+
+#### Person
 
 |数据 | 类型|
 |---|---|
 |id|string|
-|password | string|
 |phone number| string|
-|nickname | string | 
-|location | Location(待定,根据地图API来定？)|
-|eventPartIn[]|Event[]|
+|nickname | string |
+|launchEventIds（发起的活动）| (活动ID)String[]|
+
+#### User extend Person
+|数据 | 类型|
+|---|---|
+|password | string|
+|friendIds| (好友ID)String[]|
+|partInEventIds|（活动ID)String[]|
 
 
 ### 活动 Event
@@ -21,7 +31,7 @@
 |manager| User|
 |time| Time|
 |location| Location|
-|members[]| User[]|
+|memberIds[]| String[]|
 |state | int (这里定义活动状态 发起中-进行中-已结束-已取消)|
 |decision|Decision|
 
