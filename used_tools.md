@@ -6,7 +6,7 @@
 [cardslib](https://github.com/gabrielemariotti/cardslib) 使用卡片展示Event信息
 
 ## iconify
-[iconify](https://github.com/JoanZapata/android-iconify) 导入material-icons，用于action bar menu中item的icon，也可以将icons嵌入文字中
+[iconify](https://github.com/JoanZapata/android-iconify) 改为使用Font-Awesome
 
 # 官方培训课程
 - [中文版](http://hukai.me/android-training-course-in-chinese/index.html)
