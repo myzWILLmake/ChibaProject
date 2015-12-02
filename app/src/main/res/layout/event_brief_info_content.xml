@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="96dp">
+
+    <ImageView
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:id="@+id/event_brief_info_image"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/event_brief_info_image"
+        android:paddingStart="10dp"
+        style="@style/event_brief_info_time"
+        android:id="@+id/event_brief_info_time"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/event_brief_info_image"
+        android:layout_below="@id/event_brief_info_time"
+        android:paddingStart="10dp"
+        android:paddingTop="2dp"
+        style="@style/event_brief_info_place"
+        android:id="@+id/event_brief_info_place"/>
+
+    <com.joanzapata.iconify.widget.IconTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:textSize="15dp"
+        android:textColor="@color/grey"
+        android:text="更多信息 {fa-chevron-right}"/>
+
+</RelativeLayout>

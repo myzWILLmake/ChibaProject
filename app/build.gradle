@@ -35,9 +35,11 @@ dependencies {
     compile 'com.github.gabrielemariotti.cards:cardslib-extra-dragdrop:2.1.0'
 
     /*
-    Add material icons support through android-iconify
+    Add FontAwesome support through android-iconify
      */
-    compile 'com.joanzapata.iconify:android-iconify-material:2.1.1'
+    compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.1.1'
+
+    compile 'de.hdodenhof:circleimageview:2.0.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
