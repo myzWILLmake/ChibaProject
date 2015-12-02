@@ -1,14 +1,18 @@
-# About Style 
+# About Style
 寻找tools时最好优先找符合material design的，以便统一风格
 
 
-## cardslib 
+## cardslib
 [cardslib](https://github.com/gabrielemariotti/cardslib) 使用卡片展示Event信息
-  
-## iconify 
+
+## iconify
 [iconify](https://github.com/JoanZapata/android-iconify) 导入material-icons，用于action bar menu中item的icon，也可以将icons嵌入文字中
 
-## v7 appcompat library 
+# 官方培训课程
+- [中文版](http://hukai.me/android-training-course-in-chinese/index.html)
+- [英文版](http://developer.android.com/training/index.html)
+
+## v7 appcompat library
 Google官方界面优化的扩展库目前使用到了其中的 action bar
 
-### [action bar section](http://developer.android.com/training/appbar/index.html)
+- [action bar section](http://developer.android.com/training/appbar/index.html)
