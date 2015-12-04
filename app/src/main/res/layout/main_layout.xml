@@ -16,12 +16,11 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
 
-    <it.gmariotti.cardslib.library.view.CardViewNative
-        android:id="@+id/event_brief_info_card"
+    <it.gmariotti.cardslib.library.view.CardListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="12dp"
-        card:card_layout_resourceID="@layout/native_card_layout" />
+        card:list_card_layout_resourceID="@layout/native_list_card_layout.xml"
+        android:id="@+id/event_brief_info_card_list"/>
+
 </LinearLayout>

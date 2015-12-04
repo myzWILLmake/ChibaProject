@@ -12,10 +12,14 @@ import android.view.MenuItem;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
+import java.util.ArrayList;
+
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.view.CardViewNative;
+import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
+import it.gmariotti.cardslib.library.view.CardListView;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.card.EventBriefInfo;
+import moe.akagi.chibaproject.database.API;
 
 /**
  * Created by yunze on 11/30/15.
@@ -48,7 +52,7 @@ public class Main extends AppCompatActivity {
         // Add action bar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.main_activity_toolbar);
         setSupportActionBar(myToolbar);
-
+        API.init(getActivity());
         test();
     }
 
@@ -59,9 +63,25 @@ public class Main extends AppCompatActivity {
         card.setTime("20:52");
         card.setPlace("紫金港");
         card.setImage(getDrawable(R.drawable.test_profile));
+
+        EventBriefInfo card1 = new EventBriefInfo(getContext());
+        card1.setTitle("这是活动题目");
+        card1.setTime("20:52");
+        card1.setPlace("紫金港");
+        card1.setImage(getDrawable(R.drawable.test_profile));
         //Set card in the cardView
-        CardViewNative cardView = (CardViewNative) getActivity().findViewById(R.id.event_brief_info_card);
-        cardView.setCard(card);
+
+        ArrayList<Card> cards = new ArrayList<Card>();
+        cards.add(card);
+        cards.add(card1);
+        CardArrayAdapter mCardArrayAdapter = new CardArrayAdapter(getActivity(),cards);
+        CardListView listView = (CardListView) getActivity().findViewById(R.id.event_brief_info_card_list);
+        if (listView!=null){
+            listView.setAdapter(mCardArrayAdapter);
+        }
+
+        //CardViewNative cardView = (CardViewNative) getActivity().findViewById(R.id.event_brief_info_card);
+        //cardView.setCard(card);
     }
 
     public Context getContext() {
