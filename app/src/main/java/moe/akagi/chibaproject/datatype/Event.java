@@ -13,10 +13,10 @@ public class Event {
     public final static int END    = 2; // 结束
     public final static int CANCEL = 3; // 取消
 
-    private String id;
-    private Person maneger;
-    private Time time;
-    private Location location;
+    private int id;
+    private int manegerId;
+    private long time;
+    private String location;
     private List<String> memberIds;
     private int state;
     // private Decision decision;
@@ -26,35 +26,35 @@ public class Event {
         memberIds = new ArrayList<String>();
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Person getManeger() {
-        return maneger;
+    public int getManegerId() {
+        return manegerId;
     }
 
-    public void setManeger(Person maneger) {
-        this.maneger = maneger;
+    public void setManegerId(int manegerId) {
+        this.manegerId = manegerId;
     }
 
-    public Time getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(Time time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
-    public Location getLocation() {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 
@@ -64,5 +64,13 @@ public class Event {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public List<String> getMemberIds() {
+        return memberIds;
+    }
+
+    public void setMemberIds(List<String> memberIds) {
+        this.memberIds = memberIds;
     }
 }

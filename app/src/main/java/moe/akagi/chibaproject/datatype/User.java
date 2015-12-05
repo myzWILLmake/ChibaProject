@@ -12,8 +12,6 @@ public class User extends Person {
     private List<String> partInEventIds;
 
     public User() {
-        friendIds = new ArrayList<String>();
-        partInEventIds = new ArrayList<String>();
     }
 
     public String getPassword() {
@@ -22,5 +20,21 @@ public class User extends Person {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<String> getFriendIds() {
+        return friendIds;
+    }
+
+    public void setFriendIds(List<String> friendIds) {
+        this.friendIds = friendIds;
+    }
+
+    public List<String> getPartInEventIds() {
+        return partInEventIds;
+    }
+
+    public void setPartInEventIds(List<String> partInEventIds) {
+        this.partInEventIds = partInEventIds;
     }
 }
