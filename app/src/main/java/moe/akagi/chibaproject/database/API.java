@@ -35,9 +35,10 @@ public class API {
 
         for (int i=0; i<Data.event.length; i++) {
             va.put("manager", Integer.parseInt(Data.event[i][0]));
-            va.put("time", Long.parseLong(Data.event[i][1]));
-            va.put("location", Data.event[i][2]);
-            va.put("state", Integer.parseInt(Data.event[i][3]));
+            va.put("title", Data.event[i][1]);
+            va.put("time", Long.parseLong(Data.event[i][2]));
+            va.put("location", Data.event[i][3]);
+            va.put("state", Integer.parseInt(Data.event[i][4]));
             db.insert("event", null, va);
             va.clear();
         }
@@ -111,11 +112,13 @@ public class API {
             do {
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
                 int manager = cursor.getInt(cursor.getColumnIndex("manager"));
+                String title = cursor.getString(cursor.getColumnIndex("title"));
                 long time = cursor.getLong(cursor.getColumnIndex("time"));
                 String location = cursor.getString(cursor.getColumnIndex("location"));
                 int state = cursor.getInt(cursor.getColumnIndex("state"));
                 event.setId(id);
                 event.setManegerId(manager);
+                event.setTitle(title);
                 event.setTime(time);
                 event.setLocation(location);
                 event.setState(state);

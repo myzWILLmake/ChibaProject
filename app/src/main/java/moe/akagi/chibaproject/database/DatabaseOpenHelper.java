@@ -26,6 +26,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     private static final String CREATE_EVENT = "CREATE TABLE event (" +
             "id         integer PRIMARY KEY AUTOINCREMENT," +
             "manager    integer NOT NULL," +
+            "title      text    NOT NULL," +
             "time       integer," +
             "location   text," +
             "state      integer NOT NULL)";

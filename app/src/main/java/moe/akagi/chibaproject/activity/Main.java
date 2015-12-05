@@ -105,7 +105,7 @@ public class Main extends AppCompatActivity {
             Log.d("PARTIN", "event_id: " + partInEvent);
             Event event = API.getEventById(partInEvent);
             EventBriefInfo card = new EventBriefInfo(getContext());
-            card.setTitle("这是活动题目");
+            card.setTitle(event.getTitle());
             card.setTime(Long.toString(event.getTime()));
             card.setPlace(event.getLocation());
             card.setImage(getDrawable(R.drawable.test_profile));

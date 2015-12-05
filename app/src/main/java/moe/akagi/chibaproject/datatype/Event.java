@@ -15,6 +15,7 @@ public class Event {
 
     private int id;
     private int manegerId;
+    private String title;
     private long time;
     private String location;
     private List<String> memberIds;
@@ -40,6 +41,14 @@ public class Event {
 
     public void setManegerId(int manegerId) {
         this.manegerId = manegerId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public long getTime() {
