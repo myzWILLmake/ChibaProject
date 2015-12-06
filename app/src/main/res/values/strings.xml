@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">ChibaProject</string>
+    <string name="app_name">吃吧</string>
     <string name="add_event">添加活动</string>
     <string name="setting">设置</string>
+    <string name="open_drawer">open_drawer</string>
+    <string name="close_drawer">close_drawer</string>
 </resources>

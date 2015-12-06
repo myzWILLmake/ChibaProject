@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="moe.akagi.chibaproject.activity.Main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/main_activity_toolbar"
+    android:layout_height="match_parent"
+    android:id="@+id/main_activity_drawer">
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/phone"
-        android:hint="Input your phone num"/>
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/password"
-        android:hint="Input your password"/>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/main_activity_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:elevation="4dp"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/submit"
-        android:text="Submit"/>
+        </android.support.design.widget.AppBarLayout>
 
-    <it.gmariotti.cardslib.library.view.CardListView
-        android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <it.gmariotti.cardslib.library.view.CardListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                card:list_card_layout_resourceID="@layout/native_list_card_layout.xml"
+                android:id="@+id/event_brief_info_card_list"/>
+        </LinearLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+    <android.support.design.widget.NavigationView
+        android:id="@+id/main_activity_navi"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginTop="12dp"
-        card:list_card_layout_resourceID="@layout/native_list_card_layout.xml"
-        android:id="@+id/event_brief_info_card_list"/>
-
-</LinearLayout>
+        app:headerLayout="@layout/main_navi_header"
+        android:layout_gravity="start"
+        app:itemIconTint="#333"
+        app:itemTextColor="#333"
+        app:menu="@menu/main_navi_drawer_menu" />
+</android.support.v4.widget.DrawerLayout>

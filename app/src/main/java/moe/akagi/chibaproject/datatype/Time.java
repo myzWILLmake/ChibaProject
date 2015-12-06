@@ -25,6 +25,10 @@ public class Time {
         second = ca.get(Calendar.SECOND);
     }
 
+    public String formatTime() {
+        return "" + month + "月" + day + "日 " + hour + ":" + minute;
+    }
+
     public int getYear() {
         return year;
     }
