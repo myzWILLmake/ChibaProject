@@ -2,10 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="all">
         <item
-            android:id="@+id/profile"
-            android:title="我的信息"/>
+            android:id="@+id/navi_item_profile"
+            android:title="@string/profile_info"/>
         <item
-            android:id="@+id/friends"
-            android:title="我的好友"/>
+            android:id="@+id/navi_item_friends"
+            android:title="@string/my_friends"/>
+        <item
+            android:id="@+id/navi_item_logout"
+            android:title="@string/logout"/>
     </group>
 </menu>

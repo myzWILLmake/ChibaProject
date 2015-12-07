@@ -7,9 +7,4 @@
         android:title="@string/add_event"
         app:showAsAction="ifRoom" />
 
-    <item
-        android:id="@+id/main_activity_action_bar_setting"
-        android:title="@string/setting"
-        android:showAsAction="never" />
-
 </menu>

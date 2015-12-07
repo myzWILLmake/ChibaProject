@@ -2,6 +2,9 @@
     <string name="app_name">吃吧</string>
     <string name="add_event">添加活动</string>
     <string name="setting">设置</string>
+    <string name="my_friends">我的好友</string>
+    <string name="profile_info">个人信息</string>
+    <string name="logout">注销登录</string>
     <string name="open_drawer">open_drawer</string>
     <string name="close_drawer">close_drawer</string>
 </resources>

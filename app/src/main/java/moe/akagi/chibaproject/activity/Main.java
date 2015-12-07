@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -42,6 +43,7 @@ public class Main extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
+    NavigationView navigation;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -50,7 +52,7 @@ public class Main extends AppCompatActivity {
         // Set the icons
         menu.findItem(R.id.main_activity_action_bar_add_event).setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_plus)
-                .actionBarSize()
+                        .actionBarSize()
         );
         return true;
     }
@@ -107,8 +109,13 @@ public class Main extends AppCompatActivity {
                         User user = MyApplication.user;
                         user.setPartInEventIds((API.getPartInEventsByPersonId(user.getId())));
                         createCardList();
+                        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                        }
                     }
                 }
+                break;
+
         }
     }
 
@@ -164,6 +171,31 @@ public class Main extends AppCompatActivity {
 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        navigation = (NavigationView) findViewById(R.id.main_activity_navi);
+        navigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                int id = item.getItemId();
+                switch (id) {
+                    case R.id.navi_item_profile:
+                        break;
+                    case R.id.navi_item_friends:
+                        break;
+                    case R.id.navi_item_logout:
+                        SharedPreferences.Editor editor = getSharedPreferences("AppData", MODE_PRIVATE).edit();
+                        editor.putBoolean("logged", false);
+                        editor.putString("phone", null);
+                        editor.putString("password", null);
+                        editor.apply();
+                        MyApplication.user = null;
+                        Intent intent = new Intent(Main.this, Login.class);
+                        startActivityForResult(intent, LOGIN_ACTIVITY);
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     private Context getContext() {
