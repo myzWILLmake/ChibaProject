@@ -34,12 +34,10 @@ public class Login extends Activity {
         setContentView(R.layout.login);
         phoneInputLayout = (TextInputLayout) findViewById(R.id.login_phone);
         passwordInputLayout = (TextInputLayout) findViewById(R.id.login_password);
-        passwordInputLayout.setError("用户名或密码错误");
         submit = (Button) findViewById(R.id.login_submit);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                passwordInputLayout.setErrorEnabled(false);
                 String sphone = phoneInputLayout.getEditText().getText().toString();
                 String spassword = passwordInputLayout.getEditText().getText().toString();
                 submitLogin(sphone, spassword);
@@ -56,7 +54,7 @@ public class Login extends Activity {
     private void submitLogin(String phone, String password) {
         User user = API.getUserByAuth(phone, password);
         if (user == null) {
-            passwordInputLayout.setErrorEnabled(true);
+            Toast.makeText(this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
         } else {
             MyApplication.user = user;
             SharedPreferences.Editor editor = getSharedPreferences("AppData", MODE_PRIVATE).edit();
