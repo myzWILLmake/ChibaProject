@@ -7,23 +7,30 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/test_nav_bg"
+        android:src="@drawable/main_navi_bg"
         android:scaleType="centerCrop"/>
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:src="@drawable/test_profile"
-        android:layout_gravity="bottom"
-        android:layout_marginLeft="20dp"
-        android:layout_marginBottom="30dp"
-        app:civ_border_width="2dp"
-        app:civ_border_color="@color/black"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginLeft="50dp"
-        android:layout_marginBottom="10dp"
-        android:text="Yunze"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:id="@+id/main_navi_profile_image"
+            android:src="@drawable/test_profile"
+            android:layout_marginTop="50dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/black"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/main_navi_profile_image"
+            android:id="@+id/main_navi_profile_nickname"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:text="NickName"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+    </RelativeLayout>
+
 </FrameLayout>
