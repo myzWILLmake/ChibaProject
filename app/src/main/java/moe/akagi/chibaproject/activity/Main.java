@@ -40,6 +40,7 @@ import moe.akagi.chibaproject.datatype.User;
 public class Main extends AppCompatActivity {
 
     public static final int LOGIN_ACTIVITY = 1;
+    public static final int ADD_EVENT_ACTIVITY = 2;
 
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
@@ -64,6 +65,10 @@ public class Main extends AppCompatActivity {
         }
         switch (item.getItemId()) {
             // to do: add event
+            case R.id.main_activity_action_bar_add_event:
+                Intent intent = new Intent(Main.this, AddEvent.class);
+                startActivityForResult(intent, ADD_EVENT_ACTIVITY);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -84,7 +89,7 @@ public class Main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityCollector.addActivity(this);
-        layoutInit();
+        initLayout();
         SharedPreferences pref = getSharedPreferences("AppData", MODE_PRIVATE);
         if (!pref.getBoolean("logged", false)) {
             Intent intent = new Intent(Main.this, Login.class);
@@ -114,6 +119,9 @@ public class Main extends AppCompatActivity {
                         }
                     }
                 }
+                break;
+            case ADD_EVENT_ACTIVITY:
+
                 break;
 
         }
@@ -145,7 +153,15 @@ public class Main extends AppCompatActivity {
             card.setTitle(event.getTitle());
             Date date = new Date(event.getTime());
             Time time = new Time(date);
-            card.setTime(time.formatTime());
+            if (time.getYear() == 1970) {
+                card.setTime("日期时间待定");
+            } else {
+                if (event.isTimeStat()) {
+                    card.setTime("日期待定 " + time.formatTime());
+                } else {
+                    card.setTime(time.formatDateAndTime());
+                }
+            }
             card.setPlace(event.getLocation());
             card.setImage(getDrawable(R.drawable.test_profile));
             cards.add(card);
@@ -159,7 +175,7 @@ public class Main extends AppCompatActivity {
         }
     }
 
-    private void layoutInit() {
+    private void initLayout() {
         setContentView(R.layout.main_layout);
         // Add action bar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.main_activity_toolbar);

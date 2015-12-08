@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import moe.akagi.chibaproject.datatype.Event;
+import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.User;
 
 /**
@@ -37,8 +38,9 @@ public class API {
             va.put("manager", Integer.parseInt(Data.event[i][0]));
             va.put("title", Data.event[i][1]);
             va.put("time", Long.parseLong(Data.event[i][2]));
-            va.put("location", Data.event[i][3]);
-            va.put("state", Integer.parseInt(Data.event[i][4]));
+            va.put("time_stat", Integer.parseInt(Data.event[i][3]));
+            va.put("location", Data.event[i][4]);
+            va.put("state", Integer.parseInt(Data.event[i][5]));
             db.insert("event", null, va);
             va.clear();
         }
@@ -63,6 +65,23 @@ public class API {
             db.insert("launch", null, va);
             va.clear();
         }
+    }
+
+    public static Person getPersonByPersonId(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select phone, nickname from person where id = ?", new String[]{Integer.toString(id)});
+        Person person = new Person();
+        if (cursor.moveToFirst()) {
+            do {
+                String phone = cursor.getString(cursor.getColumnIndex("phone"));
+                String nickname = cursor.getString(cursor.getColumnIndex("nickname"));
+                person.setId(id);
+                person.setPhone(phone);
+                person.setNickname(nickname);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return person;
     }
 
     public static User getUserByAuth(String phone, String passwd) {
@@ -114,12 +133,17 @@ public class API {
                 int manager = cursor.getInt(cursor.getColumnIndex("manager"));
                 String title = cursor.getString(cursor.getColumnIndex("title"));
                 long time = cursor.getLong(cursor.getColumnIndex("time"));
+                int timeStat = cursor.getInt(cursor.getColumnIndex("time_stat"));
                 String location = cursor.getString(cursor.getColumnIndex("location"));
                 int state = cursor.getInt(cursor.getColumnIndex("state"));
                 event.setId(id);
                 event.setManegerId(manager);
                 event.setTitle(title);
                 event.setTime(time);
+                if (timeStat == 1)
+                    event.setTimeStat(true);
+                else
+                    event.setTimeStat(false);
                 event.setLocation(location);
                 event.setState(state);
                 event.setMemberIds(null);
@@ -127,5 +151,28 @@ public class API {
         }
         cursor.close();
         return event;
+    }
+
+    public static List<String> getFriendsByPersonId(int usr_id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select usr0_id, usr1_id from friend where usr0_id = ? or usr1_id = ?", new String[]{Integer.toString(usr_id, usr_id)});
+        List<String> friends = new ArrayList<String>();
+        if (cursor.moveToFirst()) {
+            do {
+                int usr0_id = cursor.getInt(cursor.getColumnIndex("usr0_id"));
+                int usr1_id = cursor.getInt(cursor.getColumnIndex("usr1_id"));
+                if (usr0_id == usr_id) {
+                    friends.add(Integer.toString(usr1_id));
+                } else {
+                    friends.add(Integer.toString(usr0_id));
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return friends;
+    }
+
+    public static int insertNewEvent(int managerId, String title, long time, String location) {
+        return 0;
     }
 }

@@ -17,6 +17,7 @@ public class Event {
     private int manegerId;
     private String title;
     private long time;
+    private boolean timeStat;
     private String location;
     private List<String> memberIds;
     private int state;
@@ -57,6 +58,14 @@ public class Event {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public boolean isTimeStat() {
+        return timeStat;
+    }
+
+    public void setTimeStat(boolean timeStat) {
+        this.timeStat = timeStat;
     }
 
     public String getLocation() {

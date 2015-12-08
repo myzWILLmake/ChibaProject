@@ -25,8 +25,31 @@ public class Time {
         second = ca.get(Calendar.SECOND);
     }
 
+    public String formatDateAndTime() {
+        int monthTmp = month + 1;
+        String timeTmp = formatTime();
+        return "" + monthTmp + "月" + day + "日 " + timeTmp;
+    }
+
+    public String formatDate() {
+        int monthTmp = month + 1;
+        return "" + year + "年" + monthTmp + "月" + day + "日";
+    }
+
     public String formatTime() {
-        return "" + month + "月" + day + "日 " + hour + ":" + minute;
+        String hourTmp;
+        String minuteTmp;
+        if (hour < 10) {
+            hourTmp = "0" + hour;
+        } else {
+            hourTmp = "" + hour;
+        }
+        if (minute < 10) {
+            minuteTmp = "0" + minute;
+        } else {
+            minuteTmp = "" + minute;
+        }
+        return hourTmp + ":" + minuteTmp;
     }
 
     public int getYear() {

@@ -27,7 +27,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             "id         integer PRIMARY KEY AUTOINCREMENT," +
             "manager    integer NOT NULL," +
             "title      text    NOT NULL," +
-            "time       integer," +
+            "time       integer," + // 如果年数是1970 则日期待定
+            "time_stat  integer," + // 确定时间是不是待定 0 待定 1 确定
             "location   text," +
             "state      integer NOT NULL)";
 
