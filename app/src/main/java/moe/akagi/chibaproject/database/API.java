@@ -20,7 +20,7 @@ public class API {
     public static DatabaseOpenHelper dbHelper;
 
     public static void init(Context context) {
-        dbHelper = new DatabaseOpenHelper(context, "db", null, 2);
+        dbHelper = new DatabaseOpenHelper(context, "db", null, 3);
     }
 
     public static void initInsert() {
