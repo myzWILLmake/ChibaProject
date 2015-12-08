@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -155,7 +156,7 @@ public class API {
 
     public static List<String> getFriendsByPersonId(int usr_id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select usr0_id, usr1_id from friend where usr0_id = ? or usr1_id = ?", new String[]{Integer.toString(usr_id, usr_id)});
+        Cursor cursor = db.rawQuery("select usr0_id, usr1_id from friend where usr0_id = ? or usr1_id = ?", new String[]{Integer.toString(usr_id), Integer.toString(usr_id)});
         List<String> friends = new ArrayList<String>();
         if (cursor.moveToFirst()) {
             do {
