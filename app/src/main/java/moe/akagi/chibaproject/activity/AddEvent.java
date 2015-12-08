@@ -261,10 +261,11 @@ public class AddEvent extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_event_toolbar_submit:
-                createEvent();
-                Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
-                ActivityCollector.removeActivity(this);
+                if (createEvent()) {
+                    Intent intent = new Intent();
+                    setResult(RESULT_OK, intent);
+                    ActivityCollector.removeActivity(this);
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -349,7 +350,6 @@ public class AddEvent extends AppCompatActivity {
             Toast.makeText(this, "请添加活动题目哦~", Toast.LENGTH_SHORT).show();
             return false;
         }
-
         selectedFriends = adapter.selectedIds();
         int managerId = user.getId();
         List<String> partInPerons = selectedFriends;
