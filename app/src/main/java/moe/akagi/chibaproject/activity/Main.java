@@ -98,8 +98,6 @@ public class Main extends AppCompatActivity {
             String phone = pref.getString("phone", null);
             String password = pref.getString("password", null);
             MyApplication.user = API.getUserByAuth(phone, password);
-            User user = MyApplication.user;
-            user.setPartInEventIds((API.getPartInEventsByPersonId(user.getId())));
             createCardList();
         }
     }
@@ -111,8 +109,6 @@ public class Main extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     boolean returnedData = data.getBooleanExtra("login_succeed", false);
                     if (returnedData) {
-                        User user = MyApplication.user;
-                        user.setPartInEventIds((API.getPartInEventsByPersonId(user.getId())));
                         createCardList();
                         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                             drawerLayout.closeDrawer(GravityCompat.START);
@@ -121,7 +117,11 @@ public class Main extends AppCompatActivity {
                 }
                 break;
             case ADD_EVENT_ACTIVITY:
-
+                if (resultCode == RESULT_OK) {
+                    createCardList();
+                } else {
+                    // Nothing
+                }
                 break;
 
         }
@@ -144,6 +144,9 @@ public class Main extends AppCompatActivity {
 
     private void createCardList() {
 
+        User user = MyApplication.user;
+        user.setPartInEventIds((API.getPartInEventsByPersonId(user.getId())));
+
         ArrayList<Card> cards = new ArrayList<Card>();
 
         List<String> partInEvents = MyApplication.user.getPartInEventIds();
@@ -157,12 +160,16 @@ public class Main extends AppCompatActivity {
                 card.setTime("日期时间待定");
             } else {
                 if (event.isTimeStat()) {
-                    card.setTime("日期待定 " + time.formatTime());
-                } else {
                     card.setTime(time.formatDateAndTime());
+                } else {
+                    card.setTime(time.formatDate() + " 时间待定");
                 }
             }
-            card.setPlace(event.getLocation());
+            if (event.getLocation() == null || "".equals(event.getLocation())) {
+                card.setPlace("地点待定");
+            } else {
+                card.setPlace(event.getLocation());
+            }
             card.setImage(getDrawable(R.drawable.test_profile));
             cards.add(card);
         }

@@ -1,7 +1,10 @@
 package moe.akagi.chibaproject.datatype;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by yunze on 12/1/15.
@@ -33,7 +36,7 @@ public class Time {
 
     public String formatDate() {
         int monthTmp = month + 1;
-        return "" + year + "年" + monthTmp + "月" + day + "日";
+        return "" + monthTmp + "月" + day + "日";
     }
 
     public String formatTime() {
@@ -50,6 +53,20 @@ public class Time {
             minuteTmp = "" + minute;
         }
         return hourTmp + ":" + minuteTmp;
+    }
+
+    public long formatLong() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-d H:m:s.SSS");
+        sdf.setTimeZone(TimeZone.getDefault());
+        int monthTmp = month + 1;
+        String inputString = "" + year + "-" + monthTmp + "-" + day + " " + hour + ":" + minute + ":0.000";
+        Date date = null;
+        try {
+            date = sdf.parse(inputString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date.getTime();
     }
 
     public int getYear() {

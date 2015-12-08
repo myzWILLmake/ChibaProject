@@ -65,7 +65,7 @@ public class Login extends Activity {
             Intent intent = new Intent();
             intent.putExtra("login_succeed", true);
             setResult(RESULT_OK, intent);
-            finish();
+            ActivityCollector.removeActivity(this);
         }
     }
 

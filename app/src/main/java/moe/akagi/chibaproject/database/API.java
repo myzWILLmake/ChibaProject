@@ -172,7 +172,37 @@ public class API {
         return friends;
     }
 
-    public static int insertNewEvent(int managerId, String title, long time, String location) {
-        return 0;
+    public static int insertNewEvent(int managerId, String title, long time, int timeStat, String location) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues va = new ContentValues();
+        va.put("manager", managerId);
+        va.put("title", title);
+        va.put("time", time);
+        va.put("time_stat", timeStat);
+        va.put("location", location);
+        va.put("state", 0);
+        int id = (int)db.insert("event", null, va);
+        va.clear();
+        return id;
+    }
+
+    public static void insertPartInPersons(int eventId, List<String> persons) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues va = new ContentValues();
+        for (String person : persons) {
+            va.put("event_id", eventId);
+            va.put("usr_id", Integer.parseInt(person));
+            db.insert("part_in", null, va);
+            va.clear();
+        }
+    }
+
+    public static void insertLaunchEvent(int managerId, int eventId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues va = new ContentValues();
+        va.put("usr_id", managerId);
+        va.put("event_id", eventId);
+        db.insert("launch", null, va);
+        va.clear();
     }
 }
