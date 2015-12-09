@@ -12,9 +12,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
@@ -23,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardListView;
@@ -31,6 +36,7 @@ import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.card.EventBriefInfo;
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Event;
+import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.datatype.User;
 
@@ -98,6 +104,7 @@ public class Main extends AppCompatActivity {
             String phone = pref.getString("phone", null);
             String password = pref.getString("password", null);
             MyApplication.user = API.getUserByAuth(phone, password);
+            refreshUserInfo();
             createCardList();
         }
     }
@@ -114,6 +121,7 @@ public class Main extends AppCompatActivity {
                             drawerLayout.closeDrawer(GravityCompat.START);
                         }
                     }
+                    refreshUserInfo();
                 }
                 break;
             case ADD_EVENT_ACTIVITY:
@@ -170,7 +178,10 @@ public class Main extends AppCompatActivity {
             } else {
                 card.setPlace(event.getLocation());
             }
-            card.setImage(getDrawable(R.drawable.test_profile));
+            Person manager = API.getPersonByPersonId(event.getManegerId());
+            String resString = "profile_image_" + manager.getPhone();
+            int imageResId = getResources().getIdentifier(resString, "drawable", getPackageName());
+            card.setImage(getDrawable(imageResId));
             cards.add(card);
         }
 
@@ -196,6 +207,7 @@ public class Main extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         navigation = (NavigationView) findViewById(R.id.main_activity_navi);
+        navigation.inflateHeaderView(R.layout.main_navi_header);
         navigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -219,6 +231,15 @@ public class Main extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void refreshUserInfo() {
+        CircleImageView naviImage = (CircleImageView) navigation.getHeaderView(0).findViewById(R.id.main_navi_profile_image);
+        TextView naviNickname = (TextView) navigation.getHeaderView(0).findViewById(R.id.main_navi_profile_nickname);
+        String resString = "profile_image_" + MyApplication.user.getPhone();
+        int resId = getResources().getIdentifier(resString, "drawable", getPackageName());
+        naviImage.setImageResource(resId);
+        naviNickname.setText(MyApplication.user.getNickname());
     }
 
     private Context getContext() {
