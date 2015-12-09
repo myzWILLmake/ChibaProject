@@ -1,6 +1,5 @@
 package moe.akagi.chibaproject.datatype;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
