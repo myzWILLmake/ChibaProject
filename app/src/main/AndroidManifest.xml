@@ -19,6 +19,7 @@
         </activity>
         <activity android:name=".activity.Login"/>
         <activity android:name=".activity.AddEvent"/>
+        <activity android:name=".activity.AllFriends"/>
     </application>
 
 </manifest>

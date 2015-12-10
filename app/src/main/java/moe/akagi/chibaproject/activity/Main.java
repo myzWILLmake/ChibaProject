@@ -44,6 +44,7 @@ public class Main extends AppCompatActivity {
 
     public static final int LOGIN_ACTIVITY = 1;
     public static final int ADD_EVENT_ACTIVITY = 2;
+    public static final int FRIEND_ACTIVITY = 3;
 
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
@@ -213,6 +214,8 @@ public class Main extends AppCompatActivity {
                     case R.id.navi_item_profile:
                         break;
                     case R.id.navi_item_friends:
+                        Intent intentFriend = new Intent(Main.this, AllFriends.class);
+                        startActivityForResult(intentFriend, FRIEND_ACTIVITY);
                         break;
                     case R.id.navi_item_logout:
                         SharedPreferences.Editor editor = getSharedPreferences("AppData", MODE_PRIVATE).edit();
@@ -221,8 +224,8 @@ public class Main extends AppCompatActivity {
                         editor.putString("password", null);
                         editor.apply();
                         MyApplication.user = null;
-                        Intent intent = new Intent(Main.this, Login.class);
-                        startActivityForResult(intent, LOGIN_ACTIVITY);
+                        Intent intentLogout = new Intent(Main.this, Login.class);
+                        startActivityForResult(intentLogout, LOGIN_ACTIVITY);
                         break;
                 }
                 return false;
