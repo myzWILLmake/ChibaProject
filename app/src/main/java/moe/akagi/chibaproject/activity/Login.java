@@ -31,6 +31,7 @@ public class Login extends Activity {
 
         ActivityCollector.addActivity(this);
 
+        API.initInsert();
         setContentView(R.layout.login);
         phoneInputLayout = (TextInputLayout) findViewById(R.id.login_phone);
         passwordInputLayout = (TextInputLayout) findViewById(R.id.login_password);

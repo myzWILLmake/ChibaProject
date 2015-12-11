@@ -31,6 +31,7 @@ import it.gmariotti.cardslib.library.view.CardListView;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.card.EventBriefInfo;
+import moe.akagi.chibaproject.card.EventInfo;
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Person;
