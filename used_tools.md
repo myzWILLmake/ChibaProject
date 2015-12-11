@@ -6,7 +6,7 @@
 [cardslib](https://github.com/gabrielemariotti/cardslib) 使用卡片展示Event信息
 
 ## CircleImageView
-[CircleImageView](https://github.com/hdodenhof/CircleImageView)
+[CircleImageView](https://github.com/hdodenhof/CircleImageView) 圆形图片
 
 ## iconify
 [iconify](https://github.com/JoanZapata/android-iconify) 改为使用Font-Awesome
