@@ -172,20 +172,36 @@ public class API {
         return friends;
     }
 
-    public static List<String> getPartInMembersIdByEventID(int event_id) {
+    public static List<String> getPartInPeopleByEventId(int event_id) {
         Event event = getEventById(Integer.toString(event_id));
-        List<String> memberIds = event.getMemberIds();
+        List<String> partInPeoples = new ArrayList<>();
+        partInPeoples.add(Integer.toString(event.getManegerId()));
 
+        //add part in members
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select usr_id from part_in where event_id = ?", new String[]{Integer.toString(event_id)});
         if (cursor.moveToFirst()) {
             do {
                 int usr_id = cursor.getInt(cursor.getColumnIndex("usr_id"));
-                memberIds.add(Integer.toString(usr_id));
+                partInPeoples.add(Integer.toString(usr_id));
             } while (cursor.moveToNext());
         }
-        return memberIds;
+        return partInPeoples;
     }
+//    public static List<String> getPartInMembersIdByEventID(int event_id) {
+//        Event event = getEventById(Integer.toString(event_id));
+//        List<String> memberIds = new ArrayList<>();
+//
+//        SQLiteDatabase db = dbHelper.getReadableDatabase();
+//        Cursor cursor = db.rawQuery("select usr_id from part_in where event_id = ?", new String[]{Integer.toString(event_id)});
+//        if (cursor.moveToFirst()) {
+//            do {
+//                int usr_id = cursor.getInt(cursor.getColumnIndex("usr_id"));
+//                memberIds.add(Integer.toString(usr_id));
+//            } while (cursor.moveToNext());
+//        }
+//        return memberIds;
+//    }
 
     public static int insertNewEvent(int managerId, String title, long time, int timeStat, String location) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();

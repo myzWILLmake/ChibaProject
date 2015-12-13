@@ -38,7 +38,19 @@
                 card:card_layout_resourceID="@layout/event_detail_info_content"
                 android:id="@+id/event_detail_card" />
 
+            <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="2dp"
+                android:id="@+id/event_member_list"
+                android:scrollbars="horizontal"
+                />
+
         </LinearLayout>
+
+
+
+
 
     </android.support.design.widget.CoordinatorLayout>
     <android.support.design.widget.NavigationView
