@@ -7,20 +7,25 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Date;
+
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import moe.akagi.chibaproject.R;
+import moe.akagi.chibaproject.database.API;
+import moe.akagi.chibaproject.database.Data;
+import moe.akagi.chibaproject.datatype.Event;
+import moe.akagi.chibaproject.datatype.Person;
+import moe.akagi.chibaproject.datatype.Time;
 
 /**
  * Created by yunze on 12/2/15.
  */
 public class EventInfo extends Card {
 
-    private Context mContext;
-    private CardHeader header;
-    private String time;
-    private String place;
-    private Drawable image;
+    protected Context mContext;
+    protected CardHeader header;
+    protected Event event;
 
     protected ImageView infoImage;
     protected TextView timeText;
@@ -31,13 +36,12 @@ public class EventInfo extends Card {
     protected int imageViewId;
 
 
-    public EventInfo(Context context, int innerLayout) {
+    public EventInfo(Context context, int innerLayout, Event event) {
         super(context, innerLayout);
         mContext = context;
         header = new CardHeader(mContext);
         this.addCardHeader(header);
-        this.time = "待定";
-        this.place = "待定";
+        this.event = event;
     }
 
     @Override
@@ -45,30 +49,54 @@ public class EventInfo extends Card {
         timeText = (TextView) parent.findViewById(this.timeViewId);
         placeText = (TextView) parent.findViewById(this.placeViewId);
         infoImage = (ImageView) parent.findViewById(this.imageViewId);
+        Context context = parent.getContext();
+
+        header.setTitle(getTitle());
 
         if (timeText != null)
-            timeText.setText(time);
+            timeText.setText(getTime());
 
         if (placeText != null)
-            placeText.setText(place);
+            placeText.setText(getPlace());
 
-        if (infoImage != null)
-            infoImage.setImageDrawable(image);
+
+        if (infoImage != null) {
+            int imageResId= context.getResources().getIdentifier(getImageId(), "drawable", context.getPackageName());
+            infoImage.setImageResource(imageResId);
+        }
     }
 
-    public void setTitle(String s) {
-        header.setTitle(s);
+    public String getTitle() {
+        return event.getTitle();
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public String getTime() {
+        Date date = new Date(event.getTime());
+        Time time = new Time(date);
+        String timeStr;
+        if (time.getYear() == 1970) {
+            timeStr = "日期时间待定";
+        } else {
+            if (event.isTimeStat()) {
+                timeStr = time.formatDateAndTime();
+            } else {
+                timeStr = time.formatDate() + " 时间待定";
+            }
+        }
+        return timeStr;
     }
 
-    public void setPlace(String place) {
-        this.place = place;
+    public String getPlace() {
+        String place = event.getLocation();
+        if (place == null || place.isEmpty()) {
+            place = "地点待定";
+        }
+        return place;
     }
 
-    public void setImage(Drawable image) {
-        this.image = image;
+    public String getImageId() {
+        Person manager = API.getPersonByPersonId(event.getManegerId());
+        String resString = "profile_image_" + manager.getPhone();
+        return resString;
     }
 }

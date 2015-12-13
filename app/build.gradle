@@ -35,6 +35,12 @@ dependencies {
     compile 'com.github.gabrielemariotti.cards:cardslib-extra-dragdrop:2.1.0'
 
     /*
+    Add recyclerview support
+     */
+
+    compile 'com.android.support:recyclerview-v7:21.0.3'
+
+    /*
     Add FontAwesome support through android-iconify
      */
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.1.1'

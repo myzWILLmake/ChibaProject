@@ -20,6 +20,7 @@
         <activity android:name=".activity.Login"/>
         <activity android:name=".activity.AddEvent"/>
         <activity android:name=".activity.AllFriends"/>
+        <activity android:name=".activity.EventDetail" />
     </application>
 
 </manifest>
