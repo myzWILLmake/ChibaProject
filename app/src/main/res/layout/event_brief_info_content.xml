@@ -29,12 +29,15 @@
     <com.joanzapata.iconify.widget.IconTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/event_brief_info_more"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         android:textSize="15dp"
         android:textColor="@color/grey"
         android:text="更多信息 {fa-chevron-right}"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        />
 
 </RelativeLayout>

@@ -19,9 +19,9 @@ import android.widget.TextView;
 
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.widget.IconTextView;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -31,11 +31,8 @@ import it.gmariotti.cardslib.library.view.CardListView;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.card.EventBriefInfo;
-import moe.akagi.chibaproject.card.EventInfo;
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Event;
-import moe.akagi.chibaproject.datatype.Person;
-import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.datatype.User;
 
 /**
@@ -159,28 +156,7 @@ public class Main extends AppCompatActivity {
         List<String> partInEvents = MyApplication.user.getPartInEventIds();
         for (String partInEvent : partInEvents) {
             Event event = API.getEventById(partInEvent);
-            EventBriefInfo card = new EventBriefInfo(getContext());
-            card.setTitle(event.getTitle());
-            Date date = new Date(event.getTime());
-            Time time = new Time(date);
-            if (time.getYear() == 1970) {
-                card.setTime("日期时间待定");
-            } else {
-                if (event.isTimeStat()) {
-                    card.setTime(time.formatDateAndTime());
-                } else {
-                    card.setTime(time.formatDate() + " 时间待定");
-                }
-            }
-            if (event.getLocation() == null || "".equals(event.getLocation())) {
-                card.setPlace("地点待定");
-            } else {
-                card.setPlace(event.getLocation());
-            }
-            Person manager = API.getPersonByPersonId(event.getManegerId());
-            String resString = "profile_image_" + manager.getPhone();
-            int imageResId = getResources().getIdentifier(resString, "drawable", getPackageName());
-            card.setImage(getDrawable(imageResId));
+            EventBriefInfo card = new EventBriefInfo(getContext(),event);
             cards.add(card);
         }
 
@@ -190,6 +166,10 @@ public class Main extends AppCompatActivity {
         if (listView!=null){
             listView.setAdapter(mCardArrayAdapter);
         }
+
+        //bind click listener on 'more info'
+        IconTextView moreInfo = (IconTextView) findViewById(R.id.event_brief_info_more);
+
     }
 
     private void initLayout() {

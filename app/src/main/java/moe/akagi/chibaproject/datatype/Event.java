@@ -1,12 +1,13 @@
 package moe.akagi.chibaproject.datatype;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by yunze on 11/30/15.
  */
-public class Event {
+public class Event implements Serializable{
     // event state
     public final static int READY  = 0; // 发起
     public final static int PLAY   = 1; // 进行中
