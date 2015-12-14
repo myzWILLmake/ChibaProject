@@ -20,7 +20,7 @@ public class API {
     public static DatabaseOpenHelper dbHelper;
 
     public static void init(Context context) {
-        dbHelper = new DatabaseOpenHelper(context, "db", null, 3);
+        dbHelper = new DatabaseOpenHelper(context, "db", null, 4);
     }
 
     public static void initInsert() {
@@ -63,6 +63,25 @@ public class API {
             va.put("usr_id", Integer.parseInt(Data.launch[i][0]));
             va.put("event_id", Integer.parseInt(Data.launch[i][1]));
             db.insert("launch", null, va);
+            va.clear();
+        }
+
+        for (int i=0; i<Data.decision.length; i++) {
+            va.put("event_id", Integer.parseInt(Data.decision[i][0]));
+            va.put("usr_id", Integer.parseInt(Data.decision[i][1]));
+            va.put("type", Integer.parseInt(Data.decision[i][2]));
+            va.put("content", Data.decision[i][3]);
+            va.put("agree", Data.decision[i][4]);
+            va.put("reject", Data.decision[i][5]);
+            db.insert("decision", null, va);
+            va.clear();
+        }
+
+        for (int i=0; i<Data.vote.length; i++) {
+            va.put("decision_id", Integer.parseInt(Data.vote[i][0]));
+            va.put("usr_id", Integer.parseInt(Data.vote[i][1]));
+            va.put("type", Integer.parseInt(Data.vote[i][2]));
+            db.insert("vote", null, va);
             va.clear();
         }
     }

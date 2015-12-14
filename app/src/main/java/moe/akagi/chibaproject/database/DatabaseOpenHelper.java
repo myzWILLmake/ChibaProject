@@ -47,6 +47,21 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             "usr_id     integer NOT NULL," +
             "event_id   integer NOT NULL)";
 
+    private static final String CREATE_DECISION =  "CREATE TABLE decision (" +
+            "id         integer PRIMARY KEY AUTOINCREMENT," +
+            "event_id   integer NOT NULL," +
+            "usr_id     integer NOT NULL," +
+            "type       integer NOT NULL," + // 0 time 1 location 2 add_person
+            "content    text NOT NULL," +
+            "agree      integer NOT NULL," +
+            "reject     integer NOT NULL)";
+
+    private static final String CREATE_VOTE = "CREATE TABLE vote (" +
+            "id         integer PRIMARY KEY AUTOINCREMENT," +
+            "decision_id integer NOT NULL," +
+            "usr_id     integer NOT NULL," +
+            "type       integer NOT NULL)"; // 1 同意 0 否决
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_PERSON);
@@ -54,6 +69,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_FRIEND);
         db.execSQL(CREATE_PARTIN);
         db.execSQL(CREATE_LAUNCH);
+        db.execSQL(CREATE_DECISION);
+        db.execSQL(CREATE_VOTE);
         Toast.makeText(mContext, "Create succeeded", Toast.LENGTH_SHORT).show();
     }
 
@@ -64,6 +81,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS friend");
         db.execSQL("DROP TABLE IF EXISTS part_in");
         db.execSQL("DROP TABLE IF EXISTS launch");
+        db.execSQL("DROP TABLE IF EXISTS decision");
+        db.execSQL("DROP TABLE IF EXISTS vote");
         onCreate(db);
     }
 }
