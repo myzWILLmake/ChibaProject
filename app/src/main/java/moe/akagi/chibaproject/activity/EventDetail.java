@@ -3,7 +3,6 @@ package moe.akagi.chibaproject.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,7 +29,6 @@ public class EventDetail extends AppCompatActivity {
 
     private RecyclerView memberList;
     private MemberAdapter adapter;
-    private FloatingActionButton fabAddDecision;
     private Event event;
 
     private static class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MViewHolder> {
@@ -102,14 +100,6 @@ public class EventDetail extends AppCompatActivity {
         memberList.setLayoutManager(layoutManager);
         this.adapter = new MemberAdapter(this, API.getPartInPeopleByEventId(event.getId()));
         memberList.setAdapter(this.adapter);
-        // floating action button init
-        fabAddDecision = (FloatingActionButton) findViewById(R.id.event_detail_fab);
-        fabAddDecision.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // pop a dialog to create a decision
-            }
-        });
     }
 
     public static void actionStart(Context context, Event event) {
