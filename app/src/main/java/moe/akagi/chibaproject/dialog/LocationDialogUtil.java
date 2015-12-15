@@ -1,5 +1,6 @@
 package moe.akagi.chibaproject.dialog;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.widget.EditText;
@@ -12,14 +13,16 @@ import moe.akagi.chibaproject.datatype.Location;
 /**
  * Created by yunze on 12/8/15.
  */
-public class LocationUtil {
-    private AddEvent activity;
+public class LocationDialogUtil {
+    private LocationDialogAdapter locationDialogAdapter;
+    private Activity activity;
     private String location;
     AlertDialog alertDialog;
 
     EditText locationEditText;
 
-    public LocationUtil(AddEvent activity, String location) {
+    public LocationDialogUtil(Activity activity,LocationDialogAdapter locationDialogAdapter, String location) {
+        this.locationDialogAdapter = locationDialogAdapter;
         this.activity = activity;
         this.location = location;
     }
@@ -40,14 +43,14 @@ public class LocationUtil {
                     public void onClick(DialogInterface dialog, int which) {
                         String location = locationEditText.getText().toString();
                         loc.setInfo(location);
-                        activity.refreshInfo();
+                        locationDialogAdapter.refreshLocationInfo();
                     }
                 })
                 .setNegativeButton("待定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         loc.setInfo(null);
-                        activity.refreshInfo();
+                        locationDialogAdapter.refreshLocationInfo();
                     }
                 })
                 .show();
