@@ -16,6 +16,7 @@ import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -25,15 +26,26 @@ import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.card.EventDetailInfo;
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Event;
+import moe.akagi.chibaproject.datatype.Location;
+import moe.akagi.chibaproject.datatype.Time;
+import moe.akagi.chibaproject.dialog.DateDialogAdapter;
+import moe.akagi.chibaproject.dialog.DatePickerUtil;
+import moe.akagi.chibaproject.dialog.LocationDialogAdapter;
+import moe.akagi.chibaproject.dialog.LocationDialogUtil;
+import moe.akagi.chibaproject.dialog.TimeDialogAdapter;
+import moe.akagi.chibaproject.dialog.TimePickerUtil;
 
 /**
  * Created by a15 on 12/12/15.
  */
-public class EventDetail extends AppCompatActivity {
+public class EventDetail extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter, LocationDialogAdapter {
 
     private RecyclerView memberList;
     private MemberAdapter adapter;
     private Event event;
+    protected Time date;
+    protected Time time;
+    protected Location location;
 
     private static class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MViewHolder> {
         private LayoutInflater layoutInflater;
@@ -80,6 +92,21 @@ public class EventDetail extends AppCompatActivity {
         ActivityCollector.addActivity(this);
         Intent intent = getIntent();
         this.event = (Event) intent.getSerializableExtra("event");
+
+        Date dateTmp = new Date(event.getTime());
+        date = new Time(dateTmp);
+        time = new Time(dateTmp);
+        location = new Location();
+
+        if (date.getYear() == 1970) {
+            date.setHour(-1);
+        }
+        if (!event.isTimeStat()) {
+            time.setHour(-1);
+        }
+
+        location.setInfo(event.getLocation());
+
         initLayout();
     }
 
@@ -118,9 +145,56 @@ public class EventDetail extends AppCompatActivity {
         fabDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (date.getYear() == -1) {
+                    DatePickerUtil datePickerUtil = new DatePickerUtil(EventDetail.this, EventDetail.this, -1, 0, 0);
+                    datePickerUtil.datePickDialog(date);
+                } else {
+                    DatePickerUtil datePickerUtil = new DatePickerUtil(EventDetail.this, EventDetail.this, date.getYear(), date.getMonth(), date.getDay());
+                    datePickerUtil.datePickDialog(date);
+                }
             }
         });
+
+        fabTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (time.getHour() == -1) {
+                    TimePickerUtil timePickerUtil = new TimePickerUtil(EventDetail.this, EventDetail.this, -1, 0);
+                    timePickerUtil.timePickDialog(time);
+                } else {
+                    TimePickerUtil timePickerUtil = new TimePickerUtil(EventDetail.this, EventDetail.this, time.getHour(), time.getMinute());
+                    timePickerUtil.timePickDialog(time);
+                }
+            }
+        });
+
+        fabLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (location.getInfo() == null || "".equals(location.getInfo())) {
+                    LocationDialogUtil locationDialogUtil = new LocationDialogUtil(EventDetail.this, EventDetail.this, "");
+                    locationDialogUtil.locationDialog(location);
+                } else {
+                    LocationDialogUtil locationDialogUtil = new LocationDialogUtil(EventDetail.this, EventDetail.this, location.getInfo());
+                    locationDialogUtil.locationDialog(location);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void refreshTimeInfo() {
+        // To do: add decision time type card
+    }
+
+    @Override
+    public void refreshDateInfo() {
+        // To do: add decision date type card
+    }
+
+    @Override
+    public void refreshLocationInfo() {
+        // To do: add decision location type card
     }
 
     public static void actionStart(Context context, Event event) {
