@@ -11,6 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,6 +104,23 @@ public class EventDetail extends AppCompatActivity {
         memberList.setLayoutManager(layoutManager);
         this.adapter = new MemberAdapter(this, API.getPartInPeopleByEventId(event.getId()));
         memberList.setAdapter(this.adapter);
+        // fab init
+        FloatingActionButton fabDate = (FloatingActionButton) findViewById(R.id.fab_modify_date);
+        FloatingActionButton fabTime = (FloatingActionButton) findViewById(R.id.fab_modify_time);
+        FloatingActionButton fabLocation = (FloatingActionButton) findViewById(R.id.fab_modify_location);
+        FloatingActionButton fabPerson = (FloatingActionButton) findViewById(R.id.fab_add_person);
+
+        fabDate.setIconDrawable(new IconDrawable(this, FontAwesomeIcons.fa_calendar_o));
+        fabTime.setIconDrawable(new IconDrawable(this, FontAwesomeIcons.fa_clock_o));
+        fabLocation.setIconDrawable(new IconDrawable(this, FontAwesomeIcons.fa_map_marker));
+        fabPerson.setIconDrawable(new IconDrawable(this, FontAwesomeIcons.fa_user_plus));
+
+        fabDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     public static void actionStart(Context context, Event event) {

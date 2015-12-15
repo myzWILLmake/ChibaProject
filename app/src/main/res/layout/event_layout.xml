@@ -38,5 +38,50 @@
 
     </LinearLayout>
 
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/event_detail_fab_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        app:fab_addButtonColorNormal="@color/colorAccent"
+        app:fab_addButtonColorPressed="@color/colorAccentPressed"
+        app:fab_addButtonPlusIconColor="@color/white"
+        app:fab_addButtonSize="normal"
+        app:fab_labelsPosition="left"
+        app:fab_labelStyle="@style/fab_menu_label_style">
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_modify_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/whitePressed"
+            app:fab_size="mini"
+            app:fab_title="修改日期"/>
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_modify_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/whitePressed"
+            app:fab_size="mini"
+            app:fab_title="修改时间"/>
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_modify_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/whitePressed"
+            app:fab_size="mini"
+            app:fab_title="修改地点"/>
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_person"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/whitePressed"
+            app:fab_size="mini"
+            app:fab_title="添加人员"/>
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </RelativeLayout>
