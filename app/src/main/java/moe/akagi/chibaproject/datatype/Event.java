@@ -22,7 +22,7 @@ public class Event implements Serializable{
     private String location;
     private List<String> memberIds;
     private int state;
-    // private Decision decision;
+    private List<String> decisionIds;
 
 
     public Event() {
@@ -91,5 +91,13 @@ public class Event implements Serializable{
 
     public void setMemberIds(List<String> memberIds) {
         this.memberIds = memberIds;
+    }
+
+    public List<String> getDecisionIds() {
+        return decisionIds;
+    }
+
+    public void setDecisionIds(List<String> decisionIds) {
+        this.decisionIds = decisionIds;
     }
 }

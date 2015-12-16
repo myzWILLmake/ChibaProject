@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.User;
@@ -222,7 +223,7 @@ public class API {
 //        return memberIds;
 //    }
 
-    public static int insertNewEvent(int managerId, String title, long time, int timeStat, String location) {
+    public static int insertEvent(int managerId, String title, long time, int timeStat, String location) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues va = new ContentValues();
         va.put("manager", managerId);
@@ -254,5 +255,33 @@ public class API {
         va.put("event_id", eventId);
         db.insert("launch", null, va);
         va.clear();
+    }
+
+    public static int insertDecision(Decision decision) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues va = new ContentValues();
+        va.put("event_id", decision.getEventId());
+        va.put("usr_id", decision.getSponsorId());
+        va.put("type", decision.getType());
+        va.put("content", decision.getContent());
+        va.put("agree", decision.getAgreePersonNum());
+        va.put("reject", decision.getRejectPersonNum());
+        int decisionId = (int)db.insert("decision", null, va);
+        va.clear();
+        decision.setId(decisionId);
+        return decisionId;
+    }
+
+    public static List<String> getDecisionsByEventId(int eventId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select id from decision where event_id = ?", new String[] {Integer.toString(eventId)});
+        List<String> decisionIds = new ArrayList<String>();
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndex("id"));
+                decisionIds.add(Integer.toString(id));
+            } while (cursor.moveToNext());
+        }
+        return decisionIds;
     }
 }

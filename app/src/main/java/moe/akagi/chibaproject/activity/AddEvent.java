@@ -29,8 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import moe.akagi.chibaproject.dialog.DateDialogAdapter;
 import moe.akagi.chibaproject.dialog.DatePickerUtil;
-import moe.akagi.chibaproject.dialog.LocationUtil;
+import moe.akagi.chibaproject.dialog.LocationDialogAdapter;
+import moe.akagi.chibaproject.dialog.LocationDialogUtil;
+import moe.akagi.chibaproject.dialog.TimeDialogAdapter;
 import moe.akagi.chibaproject.dialog.TimePickerUtil;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
@@ -43,7 +46,7 @@ import moe.akagi.chibaproject.datatype.User;
 /**
  * Created by yunze on 12/7/15.
  */
-public class AddEvent extends AppCompatActivity {
+public class AddEvent extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter, LocationDialogAdapter {
 
     User user;
     Time date;
@@ -196,10 +199,10 @@ public class AddEvent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (time.getHour() == -1) {
-                    TimePickerUtil timePickerUtil = new TimePickerUtil(AddEvent.this, -1 , 0);
+                    TimePickerUtil timePickerUtil = new TimePickerUtil(AddEvent.this, AddEvent.this, -1 , 0);
                     timePickerUtil.timePickDialog(time);
                 } else {
-                    TimePickerUtil timePickerUtil = new TimePickerUtil(AddEvent.this, time.getHour(), time.getMinute());
+                    TimePickerUtil timePickerUtil = new TimePickerUtil(AddEvent.this, AddEvent.this, time.getHour(), time.getMinute());
                     timePickerUtil.timePickDialog(time);
                 }
             }
@@ -210,10 +213,10 @@ public class AddEvent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (date.getYear() == -1) {
-                    DatePickerUtil datePickerUtil = new DatePickerUtil(AddEvent.this, -1, 0, 0);
+                    DatePickerUtil datePickerUtil = new DatePickerUtil(AddEvent.this, AddEvent.this, -1, 0, 0);
                     datePickerUtil.datePickDialog(date);
                 } else {
-                    DatePickerUtil datePickerUtil = new DatePickerUtil(AddEvent.this, date.getYear(), date.getMonth(), date.getDay());
+                    DatePickerUtil datePickerUtil = new DatePickerUtil(AddEvent.this, AddEvent.this,date.getYear(), date.getMonth(), date.getDay());
                     datePickerUtil.datePickDialog(date);
                 }
             }
@@ -224,11 +227,11 @@ public class AddEvent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (location.getInfo() == null) {
-                    LocationUtil locationUtil = new LocationUtil(AddEvent.this, "");
-                    locationUtil.locationDialog(location);
+                    LocationDialogUtil locationDialogUtil = new LocationDialogUtil(AddEvent.this, AddEvent.this, "");
+                    locationDialogUtil.locationDialog(location);
                 } else {
-                    LocationUtil locationUtil = new LocationUtil(AddEvent.this, location.getInfo());
-                    locationUtil.locationDialog(location);
+                    LocationDialogUtil locationDialogUtil = new LocationDialogUtil(AddEvent.this, AddEvent.this, location.getInfo());
+                    locationDialogUtil.locationDialog(location);
                 }
             }
         });
@@ -313,28 +316,34 @@ public class AddEvent extends AppCompatActivity {
         friendsListView.setAdapter(adapter);
     }
 
-    public void refreshInfo() {
+    @Override
+    public void refreshDateInfo() {
         TextView dateTextView = (TextView) findViewById(R.id.add_event_date);
-        TextView timeTextView = (TextView) findViewById(R.id.add_event_time);
-        TextView locationTextView = (TextView) findViewById(R.id.add_event_location);
         String dateStr;
-        String timeStr;
-        String locationStr;
-
         if (date.getYear() == -1) {
             dateStr = "待定";
         } else {
             dateStr = date.formatDate();
         }
         dateTextView.setText(dateStr);
+    }
 
+    @Override
+    public void refreshTimeInfo() {
+        TextView timeTextView = (TextView) findViewById(R.id.add_event_time);
+        String timeStr;
         if (time.getHour() == -1) {
             timeStr = "待定";
         } else {
             timeStr = time.formatTime();
         }
         timeTextView.setText(timeStr);
+    }
 
+    @Override
+    public void refreshLocationInfo() {
+        TextView locationTextView = (TextView) findViewById(R.id.add_event_location);
+        String locationStr;
         if (location.getInfo() == null) {
             locationStr = "待定";
         } else {
@@ -369,7 +378,7 @@ public class AddEvent extends AppCompatActivity {
             timeStat = 0;
         }
         long timeLong = dateAndTime.formatLong();
-        int eventId = API.insertNewEvent(managerId, title, timeLong, timeStat, location.getInfo());
+        int eventId = API.insertEvent(managerId, title, timeLong, timeStat, location.getInfo());
         API.insertPartInPersons(eventId, selectedFriends);
         API.insertLaunchEvent(managerId, eventId);
         return true;

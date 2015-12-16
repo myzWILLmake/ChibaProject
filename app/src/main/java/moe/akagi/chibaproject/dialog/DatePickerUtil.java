@@ -1,5 +1,6 @@
 package moe.akagi.chibaproject.dialog;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.widget.DatePicker;
@@ -16,15 +17,17 @@ import moe.akagi.chibaproject.datatype.Time;
  */
 public class DatePickerUtil implements DatePicker.OnDateChangedListener {
 
-    private AddEvent activity;
+    private Activity activity;
+    private DateDialogAdapter dateDialogAdapter;
     private int year;
     private int month;
     private int day;
     private DatePicker datePicker;
     AlertDialog alertDialog;
 
-    public DatePickerUtil(AddEvent activity, int year, int month, int day) {
+    public DatePickerUtil(Activity activity,DateDialogAdapter dateDialogAdapter, int year, int month, int day) {
         this.activity = activity;
+        this.dateDialogAdapter = dateDialogAdapter;
         this.year = year;
         this.month = month;
         this.day = day;
@@ -55,14 +58,14 @@ public class DatePickerUtil implements DatePicker.OnDateChangedListener {
                     time.setYear(year);
                     time.setMonth(month);
                     time.setDay(day);
-                    activity.refreshInfo();
+                    dateDialogAdapter.refreshDateInfo();
                 }
             })
             .setNegativeButton("待定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     time.setYear(-1);
-                    activity.refreshInfo();
+                    dateDialogAdapter.refreshDateInfo();
                 }
             }).show();
         return alertDialog;

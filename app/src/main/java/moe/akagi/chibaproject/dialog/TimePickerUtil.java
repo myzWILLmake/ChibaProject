@@ -1,5 +1,6 @@
 package moe.akagi.chibaproject.dialog;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.widget.LinearLayout;
@@ -15,14 +16,16 @@ import moe.akagi.chibaproject.datatype.Time;
  * Created by yunze on 12/8/15.
  */
 public class TimePickerUtil implements TimePicker.OnTimeChangedListener {
-
-    private AddEvent activity;
+    private TimeDialogAdapter timeDialogAdapter;
+    private Activity activity;
     private int hour;
     private int minute;
     private TimePicker timePicker;
     AlertDialog alertDialog;
 
-    public TimePickerUtil(AddEvent activity, int hour, int minute) {
+    public TimePickerUtil(Activity activity,TimeDialogAdapter timeDialogAdapter, int hour, int minute) {
+        this.activity = activity;
+        this.timeDialogAdapter = timeDialogAdapter;
         this.activity = activity;
         this.hour = hour;
         this.minute = minute;
@@ -54,14 +57,14 @@ public class TimePickerUtil implements TimePicker.OnTimeChangedListener {
                     public void onClick(DialogInterface dialog, int which) {
                         time.setHour(hour);
                         time.setMinute(minute);
-                        activity.refreshInfo();
+                        timeDialogAdapter.refreshTimeInfo();
                     }
                 })
                 .setNegativeButton("待定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         time.setHour(-1);
-                        activity.refreshInfo();
+                        timeDialogAdapter.refreshTimeInfo();
                     }
                 }).show();
         return alertDialog;
