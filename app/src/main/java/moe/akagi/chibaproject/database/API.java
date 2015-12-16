@@ -195,8 +195,6 @@ public class API {
     public static List<String> getPartInPeopleByEventId(int event_id) {
         Event event = getEventById(Integer.toString(event_id));
         List<String> partInPeoples = new ArrayList<>();
-        partInPeoples.add(Integer.toString(event.getManegerId()));
-
         //add part in members
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select usr_id from part_in where event_id = ?", new String[]{Integer.toString(event_id)});
@@ -206,6 +204,7 @@ public class API {
                 partInPeoples.add(Integer.toString(usr_id));
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return partInPeoples;
     }
 //    public static List<String> getPartInMembersIdByEventID(int event_id) {
@@ -282,6 +281,33 @@ public class API {
                 decisionIds.add(Integer.toString(id));
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return decisionIds;
+    }
+
+    public static Decision getDecisionById(int decisionId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from decision where id = ?", new String[]{Integer.toString(decisionId)});
+        Decision decision = new Decision();
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndex("id"));
+                int eventId = cursor.getInt(cursor.getColumnIndex("event_id"));
+                int usrId = cursor.getInt(cursor.getColumnIndex("usr_id"));
+                int type = cursor.getInt(cursor.getColumnIndex("type"));
+                String content = cursor.getString(cursor.getColumnIndex("content"));
+                int agreePersonNum = cursor.getInt(cursor.getColumnIndex("agree"));
+                int rejectPersonNum = cursor.getInt(cursor.getColumnIndex("reject"));
+                decision.setId(id);
+                decision.setEventId(eventId);
+                decision.setSponsorId(usrId);
+                decision.setType(type);
+                decision.setContent(content);
+                decision.setAgreePersonNum(agreePersonNum);
+                decision.setRejectPersonNum(rejectPersonNum);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return decision;
     }
 }
