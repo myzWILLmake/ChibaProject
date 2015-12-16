@@ -16,4 +16,60 @@ public class Decision {
     private String content;
     private int agreePersonNum;
     private int rejectPersonNum;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
+    }
+
+    public int getSponsorId() {
+        return sponsorId;
+    }
+
+    public void setSponsorId(int sponsorId) {
+        this.sponsorId = sponsorId;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public int getAgreePersonNum() {
+        return agreePersonNum;
+    }
+
+    public void setAgreePersonNum(int agreePersonNum) {
+        this.agreePersonNum = agreePersonNum;
+    }
+
+    public int getRejectPersonNum() {
+        return rejectPersonNum;
+    }
+
+    public void setRejectPersonNum(int rejectPersonNum) {
+        this.rejectPersonNum = rejectPersonNum;
+    }
 }

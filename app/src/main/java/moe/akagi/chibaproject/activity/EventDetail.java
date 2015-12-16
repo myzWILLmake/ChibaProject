@@ -22,9 +22,11 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.view.CardViewNative;
+import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.card.EventDetailInfo;
 import moe.akagi.chibaproject.database.API;
+import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Location;
 import moe.akagi.chibaproject.datatype.Time;
@@ -92,20 +94,17 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         ActivityCollector.addActivity(this);
         Intent intent = getIntent();
         this.event = (Event) intent.getSerializableExtra("event");
+        event.setDecisionIds(API.getDecisionsByEventId(event.getId()));
 
+        // Init date time location tmp variable for creating new decision
         Date dateTmp = new Date(event.getTime());
         date = new Time(dateTmp);
         time = new Time(dateTmp);
         location = new Location();
 
-        if (date.getYear() == 1970) {
-            date.setHour(-1);
-        }
-        if (!event.isTimeStat()) {
-            time.setHour(-1);
-        }
-
-        location.setInfo(event.getLocation());
+        date.setHour(-1);
+        time.setHour(-1);
+        location.setInfo(null);
 
         initLayout();
     }
@@ -145,39 +144,24 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         fabDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (date.getYear() == -1) {
-                    DatePickerUtil datePickerUtil = new DatePickerUtil(EventDetail.this, EventDetail.this, -1, 0, 0);
-                    datePickerUtil.datePickDialog(date);
-                } else {
-                    DatePickerUtil datePickerUtil = new DatePickerUtil(EventDetail.this, EventDetail.this, date.getYear(), date.getMonth(), date.getDay());
-                    datePickerUtil.datePickDialog(date);
-                }
+                DatePickerUtil datePickerUtil = new DatePickerUtil(EventDetail.this, EventDetail.this, -1, 0, 0);
+                datePickerUtil.datePickDialog(date);
             }
         });
 
         fabTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (time.getHour() == -1) {
-                    TimePickerUtil timePickerUtil = new TimePickerUtil(EventDetail.this, EventDetail.this, -1, 0);
-                    timePickerUtil.timePickDialog(time);
-                } else {
-                    TimePickerUtil timePickerUtil = new TimePickerUtil(EventDetail.this, EventDetail.this, time.getHour(), time.getMinute());
-                    timePickerUtil.timePickDialog(time);
-                }
+                TimePickerUtil timePickerUtil = new TimePickerUtil(EventDetail.this, EventDetail.this, -1, 0);
+                timePickerUtil.timePickDialog(time);
             }
         });
 
         fabLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (location.getInfo() == null || "".equals(location.getInfo())) {
-                    LocationDialogUtil locationDialogUtil = new LocationDialogUtil(EventDetail.this, EventDetail.this, "");
-                    locationDialogUtil.locationDialog(location);
-                } else {
-                    LocationDialogUtil locationDialogUtil = new LocationDialogUtil(EventDetail.this, EventDetail.this, location.getInfo());
-                    locationDialogUtil.locationDialog(location);
-                }
+                LocationDialogUtil locationDialogUtil = new LocationDialogUtil(EventDetail.this, EventDetail.this, "");
+                locationDialogUtil.locationDialog(location);
             }
         });
     }
@@ -185,16 +169,49 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     @Override
     public void refreshTimeInfo() {
         // To do: add decision time type card
+        if (time.getHour() != -1) {
+            Decision decision = new Decision();
+            decision.setEventId(event.getId());
+            decision.setSponsorId(MyApplication.user.getId());
+            decision.setType(Decision.TYPE_TIME);
+            decision.setContent(Long.toString(time.formatLong()));
+            decision.setAgreePersonNum(0);
+            decision.setRejectPersonNum(0);
+            API.insertDecision(decision);
+        }
+        // refreshCards();
     }
 
     @Override
     public void refreshDateInfo() {
         // To do: add decision date type card
+        if (date.getYear() != -1) {
+            Decision decision = new Decision();
+            decision.setEventId(event.getId());
+            decision.setSponsorId(MyApplication.user.getId());
+            decision.setType(Decision.TYPE_DATE);
+            decision.setContent(Long.toString(date.formatLong()));
+            decision.setAgreePersonNum(0);
+            decision.setRejectPersonNum(0);
+            API.insertDecision(decision);
+        }
+        // refreshCards();
     }
 
     @Override
     public void refreshLocationInfo() {
         // To do: add decision location type card
+        if (location.getInfo() == null) {
+            Decision decision = new Decision();
+            decision.setEventId(event.getId());
+            decision.setSponsorId(MyApplication.user.getId());
+            decision.setType(Decision.TYPE_LOCA);
+            decision.setContent(location.getInfo());
+            decision.setAgreePersonNum(0);
+            decision.setRejectPersonNum(0);
+            API.insertDecision(decision);
+        }
+        // refreshCards();
     }
 
     public static void actionStart(Context context, Event event) {
