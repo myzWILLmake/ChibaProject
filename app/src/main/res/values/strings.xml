@@ -9,4 +9,5 @@
     <string name="close_drawer">close_drawer</string>
     <string name="please_input_location">请输入地点</string>
     <string name="submit">确认</string>
+
 </resources>

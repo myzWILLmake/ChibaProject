@@ -26,4 +26,44 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:padding">5dp</item>
     </style>
+    
+    <style name="decision_card_nickname">
+        <item name="android:text">Nickname</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="decision_card_type">
+        <item name="android:text">修改时间</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="decision_card_button">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">8sp</item>
+    </style>
+    <style name="decision_card_button.agree">
+        <item name="android:text">{fa-check}</item>
+    </style>
+    <style name="decision_card_button.disagree">
+        <item name="android:text">{fa-remove}</item>
+    </style>
+    <style name="decision_card_button.agree.unchecked">
+        <item name="android:background">@color/whiteBg</item>
+        <item name="android:textColor">@color/green</item>
+    </style>
+    <style name="decision_card_button.disagree.unchecked">
+        <item name="android:background">@color/whiteBg</item>
+        <item name="android:textColor">@color/red</item>
+    </style>
+    <style name="decision_card_button.agree.checked">
+        <item name="android:textColor">@color/whiteBg</item>
+        <item name="android:background">@color/green</item>
+    </style>
+    <style name="decision_card_button.disagree.checked">
+        <item name="android:textColor">@color/whiteBg</item>
+        <item name="android:background">@color/red</item>
+    </style>
+
 </resources>

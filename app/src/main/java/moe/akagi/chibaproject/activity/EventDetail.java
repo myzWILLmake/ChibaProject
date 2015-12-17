@@ -3,10 +3,10 @@ package moe.akagi.chibaproject.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +21,12 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
+import it.gmariotti.cardslib.library.view.CardListView;
 import it.gmariotti.cardslib.library.view.CardViewNative;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
+import moe.akagi.chibaproject.card.DecisionCard;
 import moe.akagi.chibaproject.card.EventDetailInfo;
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Decision;
@@ -43,7 +46,6 @@ import moe.akagi.chibaproject.dialog.TimePickerUtil;
 public class EventDetail extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter, LocationDialogAdapter {
 
     private RecyclerView memberList;
-    private MemberAdapter adapter;
     private Event event;
     protected Time date;
     protected Time time;
@@ -88,6 +90,8 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         }
     }
 
+//    private static class DecisionAdapter extends
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,18 +122,34 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
     private void initLayout() {
         setContentView(R.layout.event_layout);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.event_detail_activity_toolbar);
+        toolbar.setTitle(event.getTitle());
+        setSupportActionBar(toolbar);
 
         // event detail card init
-        Card card = new EventDetailInfo(this, event);
+        Card memberCard = new EventDetailInfo(this, event);
         CardViewNative cardView = (CardViewNative) findViewById(R.id.event_detail_card);
-        cardView.setCard(card);
-        //memberList init
+        cardView.setCard(memberCard);
+        // memberList init
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         memberList = (RecyclerView) findViewById(R.id.event_member_list);
         memberList.setLayoutManager(layoutManager);
-        this.adapter = new MemberAdapter(this, API.getPartInPeopleByEventId(event.getId()));
-        memberList.setAdapter(this.adapter);
+        MemberAdapter memberAdapter = new MemberAdapter(this, API.getPartInPeopleByEventId(event.getId()));
+        memberList.setAdapter(memberAdapter);
+        
+        // decisionList init
+        List<String> decisionIdList = API.getDecisionsByEventId(event.getId());
+        ArrayList<Card> decisionList = new ArrayList<>();
+        for (String decisionId : decisionIdList) {
+            decisionList.add(new DecisionCard(this,API.getDecisionById(Integer.valueOf(decisionId))));
+        }
+        CardArrayAdapter decisionArrayAdapter  = new CardArrayAdapter(this, decisionList);
+        CardListView decisionListView = (CardListView) this.findViewById(R.id.event_decision_card_list);
+        if (decisionListView != null) {
+            decisionListView.setAdapter(decisionArrayAdapter);
+        }
+        
         // fab init
         FloatingActionButton fabDate = (FloatingActionButton) findViewById(R.id.fab_modify_date);
         FloatingActionButton fabTime = (FloatingActionButton) findViewById(R.id.fab_modify_time);
