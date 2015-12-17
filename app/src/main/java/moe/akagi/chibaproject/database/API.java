@@ -6,13 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Person;
-import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.datatype.User;
 
 /**
@@ -106,10 +104,6 @@ public class API {
         return person;
     }
 
-    public static void cleanDb() {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        dbHelper.cleanUp(db);
-    }
     public static User getUserByAuth(String phone, String passwd) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from person where phone = ?", new String[]{phone});
