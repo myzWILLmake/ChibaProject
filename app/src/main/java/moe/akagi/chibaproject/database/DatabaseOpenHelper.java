@@ -85,4 +85,15 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS vote");
         onCreate(db);
     }
+
+    public void cleanUp(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS person");
+        db.execSQL("DROP TABLE IF EXISTS event");
+        db.execSQL("DROP TABLE IF EXISTS friend");
+        db.execSQL("DROP TABLE IF EXISTS part_in");
+        db.execSQL("DROP TABLE IF EXISTS launch");
+        db.execSQL("DROP TABLE IF EXISTS decision");
+        db.execSQL("DROP TABLE IF EXISTS vote");
+        onCreate(db);
+    }
 }

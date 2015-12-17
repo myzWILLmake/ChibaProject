@@ -8,6 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -50,6 +53,9 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     protected Time date;
     protected Time time;
     protected Location location;
+
+    private boolean toggleAdmin;
+    private boolean isAdmin;
 
     private static class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MViewHolder> {
         private LayoutInflater layoutInflater;
@@ -110,9 +116,34 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         time.setHour(-1);
         location.setInfo(null);
 
+        //judge admin
+        if (MyApplication.user.getPhone().equals(API.getPersonByPersonId(event.getManegerId()).getPhone())) {
+            isAdmin = true;
+        } else {
+            isAdmin = false;
+        }
         initLayout();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (isAdmin) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.event_detail_toolbar_menu, menu);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.event_detail_toolbar_menu:
+                toggleAdmin();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onDestroy() {
@@ -186,6 +217,14 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         });
     }
 
+    private void toggleAdmin() {
+        if (toggleAdmin) {
+            this.getSupportActionBar().setTitle("退出管理");
+        } else {
+            this.getSupportActionBar().setTitle("管理模式");
+        }
+        toggleAdmin = !toggleAdmin;
+    }
     @Override
     public void refreshTimeInfo() {
         // To do: add decision time type card
