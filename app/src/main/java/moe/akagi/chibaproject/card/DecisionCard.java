@@ -6,11 +6,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.joanzapata.iconify.widget.IconButton;
+import com.joanzapata.iconify.widget.IconToggleButton;
+
+import java.util.Date;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Decision;
+import moe.akagi.chibaproject.datatype.Time;
 
 /**
  * Created by a15 on 12/16/15.
@@ -20,6 +26,13 @@ public class DecisionCard extends Card{
     private Decision decision;
     private int sponsorId;
 
+    TextView nicknameTextView;
+    TextView typeTextView;
+    TextView contentTextView;
+    TextView agreeNumTextView;
+    TextView disagreeNumTextView;
+    IconButton agreeButton;
+    IconButton disagreeButton;
 
     public DecisionCard(Context context,Decision decision) {
         super(context, R.layout.decision_card);
@@ -33,11 +46,13 @@ public class DecisionCard extends Card{
     public void setupInnerViewElements(ViewGroup parent, View view) {
         super.setupInnerViewElements(parent, view);
         CircleImageView sponsorImage = (CircleImageView) parent.findViewById(R.id.decision_card_sponsor_image);
-        TextView nicknameTextView  = (TextView) parent.findViewById(R.id.decision_card_sponsor_nickname);
-        TextView typeTextView = (TextView) parent.findViewById(R.id.decision_card_type);
-        TextView contentTextView = (TextView) parent.findViewById(R.id.decision_card_content);
-        TextView agreeNumTextView = (TextView) parent.findViewById(R.id.decision_card_agree_num);
-        TextView disagreeNumTextView = (TextView) parent.findViewById(R.id.decision_card_disagree_num);
+        nicknameTextView  = (TextView) parent.findViewById(R.id.decision_card_sponsor_nickname);
+        typeTextView = (TextView) parent.findViewById(R.id.decision_card_type);
+        contentTextView = (TextView) parent.findViewById(R.id.decision_card_content);
+        agreeNumTextView = (TextView) parent.findViewById(R.id.decision_card_agree_num);
+        disagreeNumTextView = (TextView) parent.findViewById(R.id.decision_card_disagree_num);
+        agreeButton = (IconButton) parent.findViewById(R.id.decision_card_agree_button);
+        disagreeButton = (IconButton) parent.findViewById(R.id.decision_card_disagree_button);
 
         sponsorImage.setImageResource(getSponsorImageId());
         nicknameTextView.setText(getSponsorNickName());
@@ -52,7 +67,17 @@ public class DecisionCard extends Card{
                 typeTextView.setText("修改时间");
                 break;
         }
-        contentTextView.setText(decision.getContent());
+        String content = decision.getContent();
+        if (decision.getType() == Decision.TYPE_DATE || decision.getType() == Decision.TYPE_TIME) {
+            Date date = new Date(Long.valueOf(content));
+            Time time = new Time(date);
+            if (decision.getType() == Decision.TYPE_DATE) {
+                content = time.formatDate();
+            } else {
+                content = time.formatTime();
+            }
+        }
+        contentTextView.setText(content);
         agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
         disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
     }
@@ -64,5 +89,13 @@ public class DecisionCard extends Card{
     public int getSponsorImageId() {
         String resId  = "profile_image_" + API.getPersonByPersonId(sponsorId).getPhone();
         return context.getResources().getIdentifier(resId, "drawable", context.getPackageName());
+    }
+
+    public void setupButton(boolean toggleAdmin) {
+        if (toggleAdmin) {
+
+        } else {
+        }
+
     }
 }

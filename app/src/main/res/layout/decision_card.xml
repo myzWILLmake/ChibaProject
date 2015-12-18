@@ -55,6 +55,7 @@
         android:layout_height="16dp"
         android:layout_marginEnd="2dp"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
         android:id="@+id/decision_card_agree_icon"
         android:layout_below="@+id/decision_card_content"
         android:layout_alignLeft="@+id/decision_card_content"
@@ -91,25 +92,26 @@
         />
 
     <com.joanzapata.iconify.widget.IconButton
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="36dp"
+        android:layout_height="12dp"
         android:id="@+id/decision_card_agree_button"
         android:layout_alignBottom="@+id/decision_card_disagree_button"
         android:layout_alignTop="@+id/decision_card_disagree_button"
         android:layout_toStartOf="@+id/decision_card_disagree_button"
         android:layout_marginEnd="30dp"
-        style="@style/decision_card_button.agree.unchecked">
-    </com.joanzapata.iconify.widget.IconButton>
+        style="@style/decision_card_button.agree.unchecked"
+    />
 
     <com.joanzapata.iconify.widget.IconButton
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="36dp"
+        android:layout_height="12dp"
         android:id="@+id/decision_card_disagree_button"
         android:layout_below="@+id/decision_card_content"
         android:layout_alignBottom="@+id/decision_card_agree_icon"
         android:layout_alignParentRight="true"
         android:layout_alignEnd="@+id/decision_card_relative_layout"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="5dp"
         style="@style/decision_card_button.disagree.unchecked"
         />
 </RelativeLayout>

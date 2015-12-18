@@ -92,6 +92,8 @@ public class Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityCollector.addActivity(this);
         initLayout();
+        API.cleanDb();
+        API.initInsert();
         SharedPreferences pref = getSharedPreferences("AppData", MODE_PRIVATE);
         if (!pref.getBoolean("logged", false)) {
             Intent intent = new Intent(Main.this, Login.class);
