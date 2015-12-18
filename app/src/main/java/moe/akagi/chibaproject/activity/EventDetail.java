@@ -53,6 +53,8 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     protected Time date;
     protected Time time;
     protected Location location;
+    ArrayList<Card> decisionCardList;
+    CardArrayAdapter decisionArrayAdapter;
 
     private boolean toggleAdmin;
     private boolean isAdmin;
@@ -68,6 +70,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
                 super(view);
                 circleImageView = (CircleImageView) view.findViewById(R.id.event_member_circle_image);
             }
+
         }
 
         public MemberAdapter(Context context, List<String> memberIds) {
@@ -139,7 +142,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.event_detail_toolbar_menu:
-                toggleAdmin();
+                toggleAdmin(item);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -171,16 +174,12 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         
         // decisionList init
         List<String> decisionIdList = API.getDecisionsByEventId(event.getId());
-        ArrayList<Card> decisionList = new ArrayList<>();
+        decisionCardList = new ArrayList<>();
         for (String decisionId : decisionIdList) {
-            decisionList.add(new DecisionCard(this,API.getDecisionById(Integer.valueOf(decisionId))));
+            decisionCardList.add(new DecisionCard(this, API.getDecisionById(Integer.valueOf(decisionId))));
         }
-        CardArrayAdapter decisionArrayAdapter  = new CardArrayAdapter(this, decisionList);
-        CardListView decisionListView = (CardListView) this.findViewById(R.id.event_decision_card_list);
-        if (decisionListView != null) {
-            decisionListView.setAdapter(decisionArrayAdapter);
-        }
-        
+        initDecisionList(decisionCardList);
+
         // fab init
         FloatingActionButton fabDate = (FloatingActionButton) findViewById(R.id.fab_modify_date);
         FloatingActionButton fabTime = (FloatingActionButton) findViewById(R.id.fab_modify_time);
@@ -217,14 +216,30 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         });
     }
 
-    private void toggleAdmin() {
-        if (toggleAdmin) {
-            this.getSupportActionBar().setTitle("退出管理");
-        } else {
-            this.getSupportActionBar().setTitle("管理模式");
+    private void initDecisionList(ArrayList<Card> cardList) {
+        decisionArrayAdapter  = new CardArrayAdapter(this, cardList);
+        CardListView decisionListView = (CardListView) this.findViewById(R.id.event_decision_card_list);
+        if (decisionListView != null) {
+            decisionListView.setAdapter(decisionArrayAdapter);
         }
+    }
+    private void toggleAdmin(MenuItem item) {
+        if (toggleAdmin) {
+            item.setTitle("退出管理");
+        } else {
+            item.setTitle("管理模式");
+        }
+        for (Card card : decisionCardList) {
+            ((DecisionCard)card).toggleView(toggleAdmin);
+        }
+        updateDecisionListView();
         toggleAdmin = !toggleAdmin;
     }
+
+    public void updateDecisionListView() {
+        decisionArrayAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void refreshTimeInfo() {
         // To do: add decision time type card

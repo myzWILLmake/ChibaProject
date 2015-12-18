@@ -1,6 +1,7 @@
 package moe.akagi.chibaproject.card;
 
 import android.content.Context;
+import android.text.style.TtsSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -13,7 +14,11 @@ import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.view.CardListView;
 import moe.akagi.chibaproject.R;
+import moe.akagi.chibaproject.activity.EventDetail;
+import moe.akagi.chibaproject.button.DecisionCardAgreeButton;
+import moe.akagi.chibaproject.button.DecisionCardDisagreeButton;
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Time;
@@ -31,8 +36,8 @@ public class DecisionCard extends Card{
     TextView contentTextView;
     TextView agreeNumTextView;
     TextView disagreeNumTextView;
-    IconButton agreeButton;
-    IconButton disagreeButton;
+    DecisionCardAgreeButton agreeButton;
+    DecisionCardDisagreeButton disagreeButton;
 
     public DecisionCard(Context context,Decision decision) {
         super(context, R.layout.decision_card);
@@ -51,8 +56,8 @@ public class DecisionCard extends Card{
         contentTextView = (TextView) parent.findViewById(R.id.decision_card_content);
         agreeNumTextView = (TextView) parent.findViewById(R.id.decision_card_agree_num);
         disagreeNumTextView = (TextView) parent.findViewById(R.id.decision_card_disagree_num);
-        agreeButton = (IconButton) parent.findViewById(R.id.decision_card_agree_button);
-        disagreeButton = (IconButton) parent.findViewById(R.id.decision_card_disagree_button);
+        agreeButton = (DecisionCardAgreeButton) parent.findViewById(R.id.decision_card_agree_button);
+        disagreeButton = (DecisionCardDisagreeButton) parent.findViewById(R.id.decision_card_disagree_button);
 
         sponsorImage.setImageResource(getSponsorImageId());
         nicknameTextView.setText(getSponsorNickName());
@@ -80,6 +85,20 @@ public class DecisionCard extends Card{
         contentTextView.setText(content);
         agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
         disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
+        agreeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                agreeButton.toggleView();
+                ((EventDetail) getContext()).updateDecisionListView();
+                }
+        });
+        disagreeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                disagreeButton.toggleView();
+                ((EventDetail) getContext()).updateDecisionListView();
+            }
+        });
     }
 
     public String getSponsorNickName() {
@@ -91,11 +110,8 @@ public class DecisionCard extends Card{
         return context.getResources().getIdentifier(resId, "drawable", context.getPackageName());
     }
 
-    public void setupButton(boolean toggleAdmin) {
-        if (toggleAdmin) {
-
-        } else {
-        }
-
+    public void toggleView(boolean toggleAdmin) {
+        agreeButton.toggleText(toggleAdmin);
+        disagreeButton.toggleText(toggleAdmin);
     }
 }
