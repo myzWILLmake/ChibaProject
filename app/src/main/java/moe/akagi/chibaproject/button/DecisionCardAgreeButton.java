@@ -32,15 +32,16 @@ public class DecisionCardAgreeButton extends DecisionCardButton{
         }
     }
 
+
     @Override
-    public void toggleView() {
-        if (isClicked) {
+    public void setUpView() {
+        if (!isClicked) {
             setTextColor(ContextCompat.getColor(getContext(), R.color.green));
             setBackgroundColor(ContextCompat.getColor(getContext(), R.color.whiteBg));
         } else {
             setTextColor(ContextCompat.getColor(getContext(), R.color.white));
             setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
         }
-        super.toggleView();
+        super.setUpView();
     }
 }

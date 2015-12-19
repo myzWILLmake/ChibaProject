@@ -36,6 +36,7 @@ import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Location;
 import moe.akagi.chibaproject.datatype.Time;
+import moe.akagi.chibaproject.datatype.Vote;
 import moe.akagi.chibaproject.dialog.DateDialogAdapter;
 import moe.akagi.chibaproject.dialog.DatePickerUtil;
 import moe.akagi.chibaproject.dialog.LocationDialogAdapter;
@@ -238,6 +239,26 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
     public void updateDecisionListView() {
         decisionArrayAdapter.notifyDataSetChanged();
+    }
+
+    public void toggleAgree(boolean isClicked,int decisionId) {
+        if (!toggleAdmin) {
+            if (!isClicked) {
+                API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
+            } else {
+                API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
+            }
+        }
+    }
+
+    public void toggleDisagree(boolean isClicked, int decisionId) {
+        if (!toggleAdmin) {
+            if (!isClicked) {
+                API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
+            } else {
+                API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
+            }
+        }
     }
 
     @Override

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 
-import com.joanzapata.iconify.Iconify;
-
 import moe.akagi.chibaproject.R;
 
 /**
@@ -33,14 +31,14 @@ public class DecisionCardDisagreeButton extends DecisionCardButton {
     }
 
     @Override
-    public void toggleView() {
-        if (isClicked) {
+    public void setUpView() {
+        if (!isClicked) {
             setTextColor(ContextCompat.getColor(getContext(), R.color.red));
             setBackgroundColor(ContextCompat.getColor(getContext(), R.color.whiteBg));
         } else {
             setTextColor(ContextCompat.getColor(getContext(), R.color.white));
             setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
         }
-        super.toggleView();
+        super.setUpView();
     }
 }

@@ -1,20 +1,16 @@
 package moe.akagi.chibaproject.card;
 
 import android.content.Context;
-import android.text.style.TtsSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-import com.joanzapata.iconify.widget.IconButton;
-import com.joanzapata.iconify.widget.IconToggleButton;
-
 import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.view.CardListView;
+import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.activity.EventDetail;
 import moe.akagi.chibaproject.button.DecisionCardAgreeButton;
@@ -22,6 +18,7 @@ import moe.akagi.chibaproject.button.DecisionCardDisagreeButton;
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Time;
+import moe.akagi.chibaproject.datatype.Vote;
 
 /**
  * Created by a15 on 12/16/15.
@@ -85,18 +82,39 @@ public class DecisionCard extends Card{
         contentTextView.setText(content);
         agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
         disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
+        Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
+        if (vote != null) {
+            if (vote.getType() == Vote.TYPE_AGREE)
+                agreeButton.setIsClicked(true);
+            else if (vote.getType() == Vote.TYPE_REJECT)
+                disagreeButton.setIsClicked(true);
+        }
+        agreeButton.setUpView();
+        disagreeButton.setUpView();
         agreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                agreeButton.toggleView();
-                ((EventDetail) getContext()).updateDecisionListView();
+                if (!disagreeButton.isClicked()) {
+                    agreeButton.toggleClicked();
+                    ((EventDetail) getContext()).toggleAgree(agreeButton.isClicked(), decision.getId());
+                    decision = API.getDecisionById(decision.getId());
+                    agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
+                    agreeButton.setUpView();
+                    ((EventDetail) getContext()).updateDecisionListView();
                 }
+            }
         });
         disagreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                disagreeButton.toggleView();
-                ((EventDetail) getContext()).updateDecisionListView();
+                if (!agreeButton.isClicked()) {
+                    disagreeButton.toggleClicked();
+                    ((EventDetail) getContext()).toggleDisagree(disagreeButton.isClicked(), decision.getId());
+                    decision = API.getDecisionById(decision.getId());
+                    disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
+                    disagreeButton.setUpView();
+                    ((EventDetail) getContext()).updateDecisionListView();
+                }
             }
         });
     }

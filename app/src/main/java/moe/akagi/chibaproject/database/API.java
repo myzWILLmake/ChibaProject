@@ -14,6 +14,7 @@ import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.datatype.User;
+import moe.akagi.chibaproject.datatype.Vote;
 
 /**
  * Created by yunze on 12/3/15.
@@ -29,7 +30,7 @@ public class API {
     public static void initInsert() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues va = new ContentValues();
-        for (int i=0; i<Data.person.length; i++) {
+        for (int i = 0; i < Data.person.length; i++) {
             va.put("phone", Data.person[i][0]);
             va.put("password", Data.person[i][1]);
             va.put("nickname", Data.person[i][2]);
@@ -37,7 +38,7 @@ public class API {
             va.clear();
         }
 
-        for (int i=0; i<Data.event.length; i++) {
+        for (int i = 0; i < Data.event.length; i++) {
             va.put("manager", Integer.parseInt(Data.event[i][0]));
             va.put("title", Data.event[i][1]);
             va.put("time", Long.parseLong(Data.event[i][2]));
@@ -48,39 +49,37 @@ public class API {
             va.clear();
         }
 
-        for (int i=0; i<Data.friend.length; i++) {
+        for (int i = 0; i < Data.friend.length; i++) {
             va.put("usr0_id", Integer.parseInt(Data.friend[i][0]));
             va.put("usr1_id", Integer.parseInt(Data.friend[i][1]));
             db.insert("friend", null, va);
             va.clear();
         }
-        
-        for (int i=0; i<Data.part_in.length; i++) {
+
+        for (int i = 0; i < Data.part_in.length; i++) {
             va.put("event_id", Integer.parseInt(Data.part_in[i][0]));
             va.put("usr_id", Integer.parseInt(Data.part_in[i][1]));
             db.insert("part_in", null, va);
             va.clear();
         }
 
-        for (int i=0; i<Data.launch.length; i++) {
+        for (int i = 0; i < Data.launch.length; i++) {
             va.put("usr_id", Integer.parseInt(Data.launch[i][0]));
             va.put("event_id", Integer.parseInt(Data.launch[i][1]));
             db.insert("launch", null, va);
             va.clear();
         }
 
-        for (int i=0; i<Data.decision.length; i++) {
+        for (int i = 0; i < Data.decision.length; i++) {
             va.put("event_id", Integer.parseInt(Data.decision[i][0]));
             va.put("usr_id", Integer.parseInt(Data.decision[i][1]));
             va.put("type", Integer.parseInt(Data.decision[i][2]));
             va.put("content", Data.decision[i][3]);
-            va.put("agree", Data.decision[i][4]);
-            va.put("reject", Data.decision[i][5]);
             db.insert("decision", null, va);
             va.clear();
         }
 
-        for (int i=0; i<Data.vote.length; i++) {
+        for (int i = 0; i < Data.vote.length; i++) {
             va.put("decision_id", Integer.parseInt(Data.vote[i][0]));
             va.put("usr_id", Integer.parseInt(Data.vote[i][1]));
             va.put("type", Integer.parseInt(Data.vote[i][2]));
@@ -110,6 +109,7 @@ public class API {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         dbHelper.cleanUp(db);
     }
+
     public static User getUserByAuth(String phone, String passwd) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from person where phone = ?", new String[]{phone});
@@ -124,7 +124,7 @@ public class API {
                     user.setPassword(password);
                     user.setPhone(phone);
                     user.setNickname(nickname);
-                } else  {
+                } else {
                     user = null;
                 }
             } while (cursor.moveToNext());
@@ -237,7 +237,7 @@ public class API {
         va.put("time_stat", timeStat);
         va.put("location", location);
         va.put("state", 0);
-        int id = (int)db.insert("event", null, va);
+        int id = (int) db.insert("event", null, va);
         va.clear();
         return id;
     }
@@ -271,7 +271,7 @@ public class API {
         va.put("content", decision.getContent());
         va.put("agree", decision.getAgreePersonNum());
         va.put("reject", decision.getRejectPersonNum());
-        int decisionId = (int)db.insert("decision", null, va);
+        int decisionId = (int) db.insert("decision", null, va);
         va.clear();
         decision.setId(decisionId);
         return decisionId;
@@ -279,7 +279,7 @@ public class API {
 
     public static List<String> getDecisionsByEventId(int eventId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select id from decision where event_id = ?", new String[] {Integer.toString(eventId)});
+        Cursor cursor = db.rawQuery("select id from decision where event_id = ?", new String[]{Integer.toString(eventId)});
         List<String> decisionIds = new ArrayList<String>();
         if (cursor.moveToFirst()) {
             do {
@@ -315,5 +315,33 @@ public class API {
         }
         cursor.close();
         return decision;
+    }
+
+    public static Vote getVoteByUsrIdDecisionId(int usrId, int decisionId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from vote where usr_id = ? and decision_id = ?", new String[]{Integer.toString(usrId), Integer.toString(decisionId)});
+        int type = -1;
+        if(cursor.getCount() == 0)
+            return null;
+        if (cursor.moveToFirst()) {
+            do {
+                type = cursor.getInt(cursor.getColumnIndex("type"));
+            } while (cursor.moveToNext());
+        }
+        return new Vote(usrId, decisionId, type);
+    }
+
+    public static void insertVote(Vote vote) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues va = new ContentValues();
+        va.put("decision_id", vote.getDecisionId());
+        va.put("usr_id", vote.getUsrId());
+        va.put("type", vote.getType());
+        db.insert("vote", null, va);
+    }
+
+    public static void deleteVote(Vote vote) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete("vote", "decision_id = ? and usr_id = ?", new String[]{Integer.toString(vote.getDecisionId()), Integer.toString(vote.getUsrId())});
     }
 }

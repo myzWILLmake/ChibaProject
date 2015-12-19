@@ -53,14 +53,42 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             "usr_id     integer NOT NULL," +
             "type       integer NOT NULL," + // 0 time 1 location 2 add_person
             "content    text NOT NULL," +
-            "agree      integer NOT NULL," +
-            "reject     integer NOT NULL)";
+            "agree      integer DEFAULT 0," +
+            "reject     integer DEFAULT 0)";
 
     private static final String CREATE_VOTE = "CREATE TABLE vote (" +
             "id         integer PRIMARY KEY AUTOINCREMENT," +
             "decision_id integer NOT NULL," +
             "usr_id     integer NOT NULL," +
             "type       integer NOT NULL)"; // 1 同意 0 否决
+
+    private static final String CREATE_TRIGGER_VOTE_DECISION_AGREE_INSERT = "CREATE TRIGGER vote_decision_agree_insert" +
+            " AFTER INSERT ON vote" +
+            " WHEN new.type = 1" +
+            " BEGIN" +
+            " UPDATE decision SET agree = agree + 1 where id = new.decision_id;" +
+            " END;";
+
+    private static final String CREATE_TRIGGER_VOTE_DECISION_AGREE_DELETE = "CREATE TRIGGER vote_decision_agree_delete" +
+            " AFTER DELETE ON vote" +
+            " WHEN old.type = 1" +
+            " BEGIN" +
+            " UPDATE decision SET agree = agree - 1 where id = old.decision_id;" +
+            " END;";
+
+    private static final String CREATE_TRIGGER_VOTE_DECISION_DISAGREE_INSERT = "CREATE TRIGGER vote_decision_disagree_insert" +
+            " AFTER INSERT ON vote" +
+            " WHEN new.type = 0" +
+            " BEGIN" +
+            " UPDATE decision SET reject = reject + 1 where id = new.decision_id;" +
+            " END;";
+
+    private static final String CREATE_TRIGGER_VOTE_DECISION_DISAGREE_DELETE = "CREATE TRIGGER vote_decision_disagree_delete" +
+            " AFTER DELETE ON vote" +
+            " WHEN old.type = 0" +
+            " BEGIN" +
+            " UPDATE decision SET reject = reject - 1 where id = old.decision_id;" +
+            " END;";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -71,6 +99,10 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_LAUNCH);
         db.execSQL(CREATE_DECISION);
         db.execSQL(CREATE_VOTE);
+        db.execSQL(CREATE_TRIGGER_VOTE_DECISION_AGREE_INSERT);
+        db.execSQL(CREATE_TRIGGER_VOTE_DECISION_AGREE_DELETE);
+        db.execSQL(CREATE_TRIGGER_VOTE_DECISION_DISAGREE_INSERT);
+        db.execSQL(CREATE_TRIGGER_VOTE_DECISION_DISAGREE_DELETE);
         Toast.makeText(mContext, "Create succeeded", Toast.LENGTH_SHORT).show();
     }
 
