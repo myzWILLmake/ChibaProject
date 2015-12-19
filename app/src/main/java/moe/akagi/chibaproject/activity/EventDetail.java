@@ -164,8 +164,19 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     private void initLayout() {
         setContentView(R.layout.event_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.event_detail_activity_toolbar);
-        toolbar.setTitle(event.getTitle());
-        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(event.getTitle());
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    setResult(RESULT_CANCELED, intent);
+                    ActivityCollector.removeActivity(EventDetail.this);
+                }
+            });
+        }
 
         // event detail card init
         Card memberCard = new EventDetailInfo(this, event);
