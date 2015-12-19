@@ -23,19 +23,18 @@
     
     <style name="decision_card_nickname">
         <item name="android:text">Nickname</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
     <style name="decision_card_type">
         <item name="android:text">修改时间</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="decision_card_button">
         <item name="android:gravity">center</item>
-        <item name="android:textSize">8sp</item>
+        <item name="android:textSize">15sp</item>
     </style>
     <style name="decision_card_button.agree">
         <item name="android:text">{fa-check}</item>
