@@ -30,7 +30,7 @@
                 android:layout_alignParentLeft="true"
                 android:id="@+id/add_event_title"
                 android:hint="添加活动标题"
-                android:textSize="25sp"/>
+                android:textSize="20sp"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:text="日期"
                 android:textColor="@color/black"
-                android:textSize="25sp"/>
+                android:textSize="20sp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
                 android:id="@+id/add_event_date"
                 android:text="待定"
                 android:textColor="@color/black"
-                android:textSize="25sp"/>
+                android:textSize="20sp"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:text="时间"
                 android:textColor="@color/black"
-                android:textSize="25sp"/>
+                android:textSize="20sp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                 android:id="@+id/add_event_time"
                 android:text="待定"
                 android:textColor="@color/black"
-                android:textSize="25sp"/>
+                android:textSize="20sp"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:text="地点"
                 android:textColor="@color/black"
-                android:textSize="25sp"/>
+                android:textSize="20sp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                 android:id="@+id/add_event_location"
                 android:text="待定"
                 android:textColor="@color/black"
-                android:textSize="25sp"/>
+                android:textSize="20sp"/>
         </RelativeLayout>
 
         <LinearLayout
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:text="邀请好友"
                 android:textColor="@color/black"
-                android:textSize="25sp"/>
+                android:textSize="20sp"/>
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
