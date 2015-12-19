@@ -20,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/event_detail_activity_toolbar"
+        android:layout_marginTop="10dp"
         android:orientation="vertical">
 
         <it.gmariotti.cardslib.library.view.CardViewNative
@@ -31,6 +32,7 @@
         <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:layout_marginTop="10dp"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:id="@+id/event_member_list"
@@ -39,8 +41,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
             <it.gmariotti.cardslib.library.view.CardListView
                 android:layout_width="match_parent"
@@ -57,14 +59,12 @@
         android:id="@+id/event_detail_fab_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
         app:fab_addButtonColorNormal="@color/colorAccent"
         app:fab_addButtonColorPressed="@color/colorAccentPressed"
         app:fab_addButtonPlusIconColor="@color/white"
-        app:fab_addButtonSize="normal"
-        app:fab_labelsPosition="left"
-        app:fab_labelStyle="@style/fab_menu_label_style">
+        app:fab_addButtonSize="normal">
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_modify_date"
             android:layout_width="wrap_content"
