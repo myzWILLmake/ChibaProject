@@ -59,7 +59,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     protected Time date;
     protected Time time;
     protected Location location;
-    ArrayList<Card> decisionCardList;
+    private EventDetailInfo eventDetailCard;
+    private CardViewNative  cardView;
+    ArrayList<DecisionCard> decisionCardList;
+    ArrayList<Card>  cardList;
     CardArrayRecyclerViewAdapter decisionArrayAdapter;
 
     private boolean toggleAdmin;
@@ -179,9 +182,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         }
 
         // event detail card init
-        Card memberCard = new EventDetailInfo(this, event);
-        CardViewNative cardView = (CardViewNative) findViewById(R.id.event_detail_card);
-        cardView.setCard(memberCard);
+        eventDetailCard = new EventDetailInfo(this, event);
+        cardView = (CardViewNative) findViewById(R.id.event_detail_card);
+        cardView.setCard(eventDetailCard);
+
         // memberList init
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -189,9 +193,14 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         memberList.setLayoutManager(layoutManager);
         MemberAdapter memberAdapter = new MemberAdapter(this, API.getPartInPeopleByEventId(event.getId()));
         memberList.setAdapter(memberAdapter);
-        
+
         // decisionList init
-        refreshDecisionCards();
+        List<String> decisionIdList = API.getDecisionsByEventId(event.getId());
+        decisionCardList = new ArrayList<>();
+        for (String decisionId : decisionIdList) {
+            decisionCardList.add(new DecisionCard(this, API.getDecisionById(Integer.valueOf(decisionId))));
+        }
+        initDecisionList();
 
         // fab init
         FloatingActionButton fabDate = (FloatingActionButton) findViewById(R.id.fab_modify_date);
@@ -227,8 +236,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         });
     }
 
-    private void initDecisionList(ArrayList<Card> cardList) {
-        decisionArrayAdapter  = new CardArrayRecyclerViewAdapter(this, cardList);
+    private void initDecisionList() {
+        cardList = new ArrayList<>();
+        cardList.addAll(decisionCardList);
+        decisionArrayAdapter = new CardArrayRecyclerViewAdapter(this, cardList);
         CardRecyclerView decisionListView = (CardRecyclerView) this.findViewById(R.id.event_decision_card_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         decisionListView.setLayoutManager(layoutManager);
@@ -237,31 +248,21 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         }
     }
 
-    private void refreshDecisionCards() {
-        List<String> decisionIdList = API.getDecisionsByEventId(event.getId());
-        decisionCardList = new ArrayList<>();
-        for (String decisionId : decisionIdList) {
-            decisionCardList.add(new DecisionCard(this, API.getDecisionById(Integer.valueOf(decisionId))));
-        }
-        initDecisionList(decisionCardList);
-    }
-
     private void toggleAdmin(MenuItem item) {
+        toggleAdmin = !toggleAdmin;
         if (toggleAdmin) {
             item.setTitle("退出管理");
         } else {
             item.setTitle("管理模式");
         }
-        for (Card card : decisionCardList) {
-            ((DecisionCard)card).toggleView(toggleAdmin);
+        for (DecisionCard card : decisionCardList) {
+            card.toggleView(toggleAdmin);
         }
-        updateDecisionListView();
-        toggleAdmin = !toggleAdmin;
     }
 
-    public void updateDecisionListView() {
-        decisionArrayAdapter.notifyDataSetChanged();
-    }
+//    public void updateDecisionListView() {
+//        decisionArrayAdapter.notifyDataSetChanged();
+//    }
 
     public void toggleAgree(boolean isClicked,int decisionId) {
         if (!toggleAdmin) {
@@ -269,6 +270,33 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
                 API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
             } else {
                 API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
+            }
+        }else {
+            Decision tDecision = API.getDecisionById(decisionId);
+            String content = tDecision.getContent();
+            Event tEvent = this.event;
+            switch (tDecision.getType()) {
+                case Decision.TYPE_TIME: tEvent.setTimeStat(true);
+                case Decision.TYPE_DATE:
+                    tEvent.setTime(Long.valueOf(content));
+                    break;
+                case Decision.TYPE_LOCA:
+                    tEvent.setLocation(content);
+                    break;
+            }
+            eventDetailCard = new EventDetailInfo(this, tEvent);
+            cardView.refreshCard(eventDetailCard);
+            for (int i = 0; i < decisionCardList.size(); i++) {
+                DecisionCard decisionCard = decisionCardList.get(i);
+                if (decisionCard.getDecisionId()  == decisionId) {
+                    decisionCardList.remove(i);
+                    cardList.remove(i);
+                    decisionArrayAdapter.notifyItemRemoved(i);
+//                    decisionArrayAdapter.notifyDataSetChanged();
+//                    decisionArrayAdapter.notifyItemRangeChanged(i,decisionCardList.size() - 1);
+//                    decisionArrayAdapter.notifyItemRangeChanged(i,decisionCardList.size() - 1);
+                    break;
+                }
             }
         }
     }
@@ -280,11 +308,13 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             } else {
                 API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
             }
+        }else{
         }
     }
 
     @Override
     public void refreshTimeInfo() {
+        // To do: add decision time type card
         if (time.getHour() != -1) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
@@ -295,11 +325,12 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             decision.setRejectPersonNum(0);
             API.insertDecision(decision);
         }
-        refreshDecisionCards();
+        // refreshCards();
     }
 
     @Override
     public void refreshDateInfo() {
+        // To do: add decision date type card
         if (date.getYear() != -1) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
@@ -310,11 +341,12 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             decision.setRejectPersonNum(0);
             API.insertDecision(decision);
         }
-        refreshDecisionCards();
+        // refreshCards();
     }
 
     @Override
     public void refreshLocationInfo() {
+        // To do: add decision location type card
         if (location.getInfo() == null) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
@@ -325,7 +357,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             decision.setRejectPersonNum(0);
             API.insertDecision(decision);
         }
-        refreshDecisionCards();
+        // refreshCards();
     }
 
     public static void actionStart(Context context, Event event) {

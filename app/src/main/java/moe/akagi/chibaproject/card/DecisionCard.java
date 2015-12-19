@@ -84,15 +84,10 @@ public class DecisionCard extends Card{
         contentTextView.setText(content);
         agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
         disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
-        Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
-        if (vote != null) {
-            if (vote.getType() == Vote.TYPE_AGREE)
-                agreeButton.setIsClicked(true);
-            else if (vote.getType() == Vote.TYPE_REJECT)
-                disagreeButton.setIsClicked(true);
-        }
-        agreeButton.setUpView();
-        disagreeButton.setUpView();
+
+        setUpViewFromVoteData();
+
+        // bind button onClickListener
         agreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +114,19 @@ public class DecisionCard extends Card{
         });
     }
 
+    public void setUpViewFromVoteData() {
+        Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
+        if (vote != null) {
+            if (vote.getType() == Vote.TYPE_AGREE)
+                agreeButton.setIsClicked(true);
+            else if (vote.getType() == Vote.TYPE_REJECT)
+                disagreeButton.setIsClicked(true);
+        }
+        agreeButton.setUpView();
+        disagreeButton.setUpView();
+
+    }
+
     public String getSponsorNickName() {
         return API.getPersonByPersonId(sponsorId).getNickname();
     }
@@ -131,5 +139,17 @@ public class DecisionCard extends Card{
     public void toggleView(boolean toggleAdmin) {
         agreeButton.toggleText(toggleAdmin);
         disagreeButton.toggleText(toggleAdmin);
+        if (toggleAdmin) {
+            agreeButton.setIsClicked(false);
+            disagreeButton.setIsClicked(false);
+            agreeButton.setUpView();
+            disagreeButton.setUpView();
+        } else {
+            setUpViewFromVoteData();
+        }
+    }
+
+    public int getDecisionId() {
+        return decision.getId();
     }
 }

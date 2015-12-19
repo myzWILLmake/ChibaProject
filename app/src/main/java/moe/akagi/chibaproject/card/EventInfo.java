@@ -99,4 +99,7 @@ public class EventInfo extends Card {
         String resString = "profile_image_" + manager.getPhone();
         return resString;
     }
+
+
+
 }

@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/event_brief_info_image"
         android:paddingStart="10dp"
+        android:maxLines="1"
         style="@style/event_brief_info_time"
         android:id="@+id/event_brief_info_time"/>
 

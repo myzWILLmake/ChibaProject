@@ -32,7 +32,6 @@ public class DecisionCardAgreeButton extends DecisionCardButton{
         }
     }
 
-
     @Override
     public void setUpView() {
         if (!isClicked) {

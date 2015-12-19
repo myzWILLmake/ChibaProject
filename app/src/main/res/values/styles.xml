@@ -11,7 +11,7 @@
 
     <style name="event_brief_info_time">
         <item name="android:text">Time</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">26sp</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
