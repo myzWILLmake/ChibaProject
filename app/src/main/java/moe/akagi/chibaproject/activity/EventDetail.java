@@ -197,12 +197,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         FloatingActionButton fabDate = (FloatingActionButton) findViewById(R.id.fab_modify_date);
         FloatingActionButton fabTime = (FloatingActionButton) findViewById(R.id.fab_modify_time);
         FloatingActionButton fabLocation = (FloatingActionButton) findViewById(R.id.fab_modify_location);
-        FloatingActionButton fabPerson = (FloatingActionButton) findViewById(R.id.fab_add_person);
 
         fabDate.setIconDrawable(new IconDrawable(this, FontAwesomeIcons.fa_calendar_o));
         fabTime.setIconDrawable(new IconDrawable(this, FontAwesomeIcons.fa_clock_o));
         fabLocation.setIconDrawable(new IconDrawable(this, FontAwesomeIcons.fa_map_marker));
-        fabPerson.setIconDrawable(new IconDrawable(this, FontAwesomeIcons.fa_user_plus));
 
         fabDate.setOnClickListener(new View.OnClickListener() {
             @Override
