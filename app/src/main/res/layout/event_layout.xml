@@ -34,23 +34,16 @@
             card:card_layout_resourceID="@layout/event_detail_info_content"
             android:id="@+id/event_detail_card" />
 
-        <android.support.v7.widget.CardView
+        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="10dp">
-            <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:id="@+id/event_member_list"
-                android:scrollbars="none"
-                />
-        </android.support.v7.widget.CardView>
+            android:layout_height="58dp"
+            android:layout_marginTop="5dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:id="@+id/event_member_list"
+            android:scrollbars="none" />
     </LinearLayout>
 
     <LinearLayout
@@ -74,6 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
+        android:elevation="5dp"
         app:fab_addButtonColorNormal="@color/colorAccent"
         app:fab_addButtonColorPressed="@color/colorAccentPressed"
         app:fab_addButtonPlusIconColor="@color/white"
