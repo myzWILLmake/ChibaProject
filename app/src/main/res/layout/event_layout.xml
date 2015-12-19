@@ -20,39 +20,53 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/event_detail_activity_toolbar"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical">
+        android:id="@+id/event_detail_toolbar_extend"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical"
+        android:elevation="4dp"
+        android:paddingBottom="5dp">
 
         <it.gmariotti.cardslib.library.view.CardViewNative
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             card:card_layout_resourceID="@layout/event_detail_info_content"
             android:id="@+id/event_detail_card" />
 
-        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:id="@+id/event_member_list"
-            android:scrollbars="none"
-            />
-
-        <LinearLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-            <it.gmariotti.cardslib.library.recyclerview.view.CardRecyclerView
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp">
+            <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                card:list_card_layout_resourceID="@layout/native_recyclerview_card_layout.xml"
-                android:id="@+id/event_decision_card_list"
+                android:layout_height="58dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:id="@+id/event_member_list"
+                android:scrollbars="none"
                 />
-        </LinearLayout>
+        </android.support.v7.widget.CardView>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:layout_below="@id/event_detail_toolbar_extend"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <it.gmariotti.cardslib.library.recyclerview.view.CardRecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            card:list_card_layout_resourceID="@layout/native_recyclerview_card_layout.xml"
+            android:id="@+id/event_decision_card_list"
+            />
+    </LinearLayout>
+
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/event_detail_fab_menu"
