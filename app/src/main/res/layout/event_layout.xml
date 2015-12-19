@@ -44,15 +44,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
-            <it.gmariotti.cardslib.library.view.CardListView
+            <it.gmariotti.cardslib.library.recyclerview.view.CardRecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                card:list_card_layout_resourceID="@layout/native_list_card_layout.xml"
+                card:list_card_layout_resourceID="@layout/native_recyclerview_card_layout.xml"
                 android:id="@+id/event_decision_card_list"
                 />
         </LinearLayout>
-
     </LinearLayout>
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu

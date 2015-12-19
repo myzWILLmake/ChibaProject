@@ -1,6 +1,7 @@
 package moe.akagi.chibaproject.card;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -69,6 +70,7 @@ public class DecisionCard extends Card{
                 typeTextView.setText("修改时间");
                 break;
         }
+
         String content = decision.getContent();
         if (decision.getType() == Decision.TYPE_DATE || decision.getType() == Decision.TYPE_TIME) {
             Date date = new Date(Long.valueOf(content));
@@ -100,7 +102,6 @@ public class DecisionCard extends Card{
                     decision = API.getDecisionById(decision.getId());
                     agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
                     agreeButton.setUpView();
-                    ((EventDetail) getContext()).updateDecisionListView();
                 }
             }
         });
@@ -113,7 +114,6 @@ public class DecisionCard extends Card{
                     decision = API.getDecisionById(decision.getId());
                     disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
                     disagreeButton.setUpView();
-                    ((EventDetail) getContext()).updateDecisionListView();
                 }
             }
         });

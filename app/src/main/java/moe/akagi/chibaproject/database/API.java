@@ -328,7 +328,7 @@ public class API {
                 type = cursor.getInt(cursor.getColumnIndex("type"));
             } while (cursor.moveToNext());
         }
-        return new Vote(usrId, decisionId, type);
+        return new Vote(decisionId, usrId, type);
     }
 
     public static void insertVote(Vote vote) {

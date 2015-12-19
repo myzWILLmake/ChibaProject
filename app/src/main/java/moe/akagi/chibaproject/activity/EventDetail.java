@@ -2,17 +2,20 @@ package moe.akagi.chibaproject.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.joanzapata.iconify.IconDrawable;
@@ -25,6 +28,8 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
+import it.gmariotti.cardslib.library.recyclerview.internal.CardArrayRecyclerViewAdapter;
+import it.gmariotti.cardslib.library.recyclerview.view.CardRecyclerView;
 import it.gmariotti.cardslib.library.view.CardListView;
 import it.gmariotti.cardslib.library.view.CardViewNative;
 import moe.akagi.chibaproject.MyApplication;
@@ -55,7 +60,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     protected Time time;
     protected Location location;
     ArrayList<Card> decisionCardList;
-    CardArrayAdapter decisionArrayAdapter;
+    CardArrayRecyclerViewAdapter decisionArrayAdapter;
 
     private boolean toggleAdmin;
     private boolean isAdmin;
@@ -129,6 +134,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         initLayout();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (isAdmin) {
@@ -179,6 +185,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         for (String decisionId : decisionIdList) {
             decisionCardList.add(new DecisionCard(this, API.getDecisionById(Integer.valueOf(decisionId))));
         }
+
         initDecisionList(decisionCardList);
 
         // fab init
@@ -218,8 +225,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     }
 
     private void initDecisionList(ArrayList<Card> cardList) {
-        decisionArrayAdapter  = new CardArrayAdapter(this, cardList);
-        CardListView decisionListView = (CardListView) this.findViewById(R.id.event_decision_card_list);
+        decisionArrayAdapter  = new CardArrayRecyclerViewAdapter(this, cardList);
+        CardRecyclerView decisionListView = (CardRecyclerView) this.findViewById(R.id.event_decision_card_list);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        decisionListView.setLayoutManager(layoutManager);
         if (decisionListView != null) {
             decisionListView.setAdapter(decisionArrayAdapter);
         }
