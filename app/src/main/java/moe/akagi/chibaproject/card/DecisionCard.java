@@ -114,22 +114,15 @@ public class DecisionCard extends Card{
     }
 
     public void setUpViewFromVoteData(boolean toggleAdmin) {
-        if (!toggleAdmin) {
-            Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
-            if (vote != null) {
-                if (vote.getType() == Vote.TYPE_AGREE)
-                    agreeButton.setIsClicked(true);
-                else if (vote.getType() == Vote.TYPE_REJECT)
-                    disagreeButton.setIsClicked(true);
-            }
-            agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
-            disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
-        }else{
-            agreeNumTextView.setText("");
-            disagreeNumTextView.setText("");
-            agreeButton.setIsClicked(false);
-            disagreeButton.setIsClicked(false);
+        Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
+        if (vote != null) {
+            if (vote.getType() == Vote.TYPE_AGREE)
+                agreeButton.setIsClicked(true);
+            else if (vote.getType() == Vote.TYPE_REJECT)
+                disagreeButton.setIsClicked(true);
         }
+        agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
+        disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
         agreeButton.setUpView(toggleAdmin);
         disagreeButton.setUpView(toggleAdmin);
     }

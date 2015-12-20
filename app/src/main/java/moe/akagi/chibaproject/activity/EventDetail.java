@@ -360,7 +360,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     @Override
     public void refreshLocationInfo() {
         // To do: add decision location type card
-        if (location.getInfo() == null) {
+        if (location.getInfo() != null) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
             decision.setSponsorId(MyApplication.user.getId());

@@ -44,6 +44,9 @@ public class DecisionCardDisagreeButton extends DecisionCardButton {
 
     @Override
     public void setUpView(boolean toggleAdmin) {
+        if (toggleAdmin) {
+            setIsClicked(false);
+        }
         setUpView();
         toggleText(toggleAdmin);
         super.setUpView(toggleAdmin);
