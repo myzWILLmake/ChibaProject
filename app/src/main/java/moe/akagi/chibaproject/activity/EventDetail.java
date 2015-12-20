@@ -164,6 +164,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         ActivityCollector.removeActivity(this);
     }
 
+
     private void initLayout() {
         setContentView(R.layout.event_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.event_detail_activity_toolbar);
@@ -260,9 +261,30 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         }
     }
 
-//    public void updateDecisionListView() {
-//        decisionArrayAdapter.notifyDataSetChanged();
-//    }
+    public  boolean isAdmin() {
+        return toggleAdmin;
+    }
+
+    private void deleteDecisionCard(int decisionId) {
+        for (int i = 0; i < decisionCardList.size(); i++) {
+            DecisionCard decisionCard = decisionCardList.get(i);
+            if (decisionCard.getDecisionId()  == decisionId) {
+                decisionCardList.remove(i);
+                cardList.remove(i);
+                decisionArrayAdapter.notifyItemRemoved(i);
+                break;
+            }
+        }
+        API.deleteDecisionById(decisionId);
+    }
+
+    private void addDecisionCard(Decision decision) {
+        //add decision card
+        DecisionCard card = new DecisionCard(this,decision);
+        decisionCardList.add(card);
+        cardList.add(card);
+        decisionArrayAdapter.notifyItemInserted(cardList.size() - 1);
+    }
 
     public void toggleAgree(boolean isClicked,int decisionId) {
         if (!toggleAdmin) {
@@ -286,18 +308,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             }
             eventDetailCard = new EventDetailInfo(this, tEvent);
             cardView.refreshCard(eventDetailCard);
-            for (int i = 0; i < decisionCardList.size(); i++) {
-                DecisionCard decisionCard = decisionCardList.get(i);
-                if (decisionCard.getDecisionId()  == decisionId) {
-                    decisionCardList.remove(i);
-                    cardList.remove(i);
-                    decisionArrayAdapter.notifyItemRemoved(i);
-//                    decisionArrayAdapter.notifyDataSetChanged();
-//                    decisionArrayAdapter.notifyItemRangeChanged(i,decisionCardList.size() - 1);
-//                    decisionArrayAdapter.notifyItemRangeChanged(i,decisionCardList.size() - 1);
-                    break;
-                }
-            }
+            deleteDecisionCard(decisionId);
         }
     }
 
@@ -309,6 +320,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
                 API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
             }
         }else{
+            deleteDecisionCard(decisionId);
         }
     }
 
@@ -324,8 +336,8 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             decision.setAgreePersonNum(0);
             decision.setRejectPersonNum(0);
             API.insertDecision(decision);
-        }
-        // refreshCards();
+            addDecisionCard(decision);
+       }
     }
 
     @Override
@@ -340,6 +352,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             decision.setAgreePersonNum(0);
             decision.setRejectPersonNum(0);
             API.insertDecision(decision);
+            addDecisionCard(decision);
         }
         // refreshCards();
     }
@@ -356,6 +369,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             decision.setAgreePersonNum(0);
             decision.setRejectPersonNum(0);
             API.insertDecision(decision);
+            addDecisionCard(decision);
         }
         // refreshCards();
     }

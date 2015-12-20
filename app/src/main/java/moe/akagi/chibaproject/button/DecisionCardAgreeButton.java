@@ -43,4 +43,11 @@ public class DecisionCardAgreeButton extends DecisionCardButton{
         }
         super.setUpView();
     }
+
+    @Override
+    public void setUpView(boolean toggleAdmin) {
+        setUpView();
+        toggleText(toggleAdmin);
+        super.setUpView();
+    }
 }

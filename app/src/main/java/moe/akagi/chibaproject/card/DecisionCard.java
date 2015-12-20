@@ -81,11 +81,10 @@ public class DecisionCard extends Card{
                 content = time.formatTime();
             }
         }
-        contentTextView.setText(content);
-        agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
-        disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
 
-        setUpViewFromVoteData();
+        contentTextView.setText(content);
+
+        setUpViewFromVoteData(((EventDetail)getContext()).isAdmin());
 
         // bind button onClickListener
         agreeButton.setOnClickListener(new View.OnClickListener() {
@@ -114,17 +113,25 @@ public class DecisionCard extends Card{
         });
     }
 
-    public void setUpViewFromVoteData() {
-        Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
-        if (vote != null) {
-            if (vote.getType() == Vote.TYPE_AGREE)
-                agreeButton.setIsClicked(true);
-            else if (vote.getType() == Vote.TYPE_REJECT)
-                disagreeButton.setIsClicked(true);
+    public void setUpViewFromVoteData(boolean toggleAdmin) {
+        if (!toggleAdmin) {
+            Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
+            if (vote != null) {
+                if (vote.getType() == Vote.TYPE_AGREE)
+                    agreeButton.setIsClicked(true);
+                else if (vote.getType() == Vote.TYPE_REJECT)
+                    disagreeButton.setIsClicked(true);
+            }
+            agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
+            disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
+        }else{
+            agreeNumTextView.setText("");
+            disagreeNumTextView.setText("");
+            agreeButton.setIsClicked(false);
+            disagreeButton.setIsClicked(false);
         }
-        agreeButton.setUpView();
-        disagreeButton.setUpView();
-
+        agreeButton.setUpView(toggleAdmin);
+        disagreeButton.setUpView(toggleAdmin);
     }
 
     public String getSponsorNickName() {
@@ -139,13 +146,12 @@ public class DecisionCard extends Card{
     public void toggleView(boolean toggleAdmin) {
         agreeButton.toggleText(toggleAdmin);
         disagreeButton.toggleText(toggleAdmin);
+        agreeButton.setUpView(toggleAdmin);
+        disagreeButton.setUpView(toggleAdmin);
+        setUpViewFromVoteData(toggleAdmin);
         if (toggleAdmin) {
             agreeButton.setIsClicked(false);
             disagreeButton.setIsClicked(false);
-            agreeButton.setUpView();
-            disagreeButton.setUpView();
-        } else {
-            setUpViewFromVoteData();
         }
     }
 

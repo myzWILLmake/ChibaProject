@@ -10,6 +10,7 @@ import com.joanzapata.iconify.widget.IconButton;
  */
 public class DecisionCardButton extends IconButton{
     protected boolean isClicked;
+    protected String text;
 
     public DecisionCardButton(Context context) {
         super(context);
@@ -36,6 +37,13 @@ public class DecisionCardButton extends IconButton{
         isClicked = !isClicked;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     protected void setUpView() {
+    }
+
+    protected void setUpView(boolean toggleAdmin) {
     }
 }

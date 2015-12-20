@@ -213,20 +213,6 @@ public class API {
         cursor.close();
         return partInPeoples;
     }
-//    public static List<String> getPartInMembersIdByEventID(int event_id) {
-//        Event event = getEventById(Integer.toString(event_id));
-//        List<String> memberIds = new ArrayList<>();
-//
-//        SQLiteDatabase db = dbHelper.getReadableDatabase();
-//        Cursor cursor = db.rawQuery("select usr_id from part_in where event_id = ?", new String[]{Integer.toString(event_id)});
-//        if (cursor.moveToFirst()) {
-//            do {
-//                int usr_id = cursor.getInt(cursor.getColumnIndex("usr_id"));
-//                memberIds.add(Integer.toString(usr_id));
-//            } while (cursor.moveToNext());
-//        }
-//        return memberIds;
-//    }
 
     public static int insertEvent(int managerId, String title, long time, int timeStat, String location) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -343,5 +329,10 @@ public class API {
     public static void deleteVote(Vote vote) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete("vote", "decision_id = ? and usr_id = ?", new String[]{Integer.toString(vote.getDecisionId()), Integer.toString(vote.getUsrId())});
+    }
+
+    public static void deleteDecisionById(int decisionId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete("decision", "id = ?", new String[]{Integer.toString(decisionId)});
     }
 }
