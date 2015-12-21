@@ -157,7 +157,7 @@ public class Main extends AppCompatActivity {
 
         List<String> partInEvents = MyApplication.user.getPartInEventIds();
         for (String partInEvent : partInEvents) {
-            Event event = API.getEventById(partInEvent);
+            Event event = API.getEventById(Integer.parseInt(partInEvent));
             EventBriefInfo card = new EventBriefInfo(getContext(),event);
             cards.add(card);
         }

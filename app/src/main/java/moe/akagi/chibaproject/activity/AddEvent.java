@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.dialog.DateDialogAdapter;
 import moe.akagi.chibaproject.dialog.DatePickerUtil;
 import moe.akagi.chibaproject.dialog.LocationDialogAdapter;
@@ -364,7 +365,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         List<String> partInPerons = selectedFriends;
         partInPerons.add(Integer.toString(managerId));
 
-        int timeStat = 1;
+        boolean timeStat = true;
         Time dateAndTime = new Time(new Date(0));
         if (date.getYear() != -1) {
             dateAndTime.setYear(date.getYear());
@@ -375,10 +376,16 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
             dateAndTime.setHour(time.getHour());
             dateAndTime.setMinute(time.getMinute());
         } else {
-            timeStat = 0;
+            timeStat = false;
         }
         long timeLong = dateAndTime.formatLong();
-        int eventId = API.insertEvent(managerId, title, timeLong, timeStat, location.getInfo());
+        Event eventTmp = new Event();
+        eventTmp.setManegerId(managerId);
+        eventTmp.setTitle(title);
+        eventTmp.setTime(timeLong);
+        eventTmp.setTimeStat(timeStat);
+        eventTmp.setLocation(location.getInfo());
+        int eventId = API.insertEvent(eventTmp);
         API.insertPartInPersons(eventId, selectedFriends);
         API.insertLaunchEvent(managerId, eventId);
         return true;

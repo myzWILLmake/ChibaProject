@@ -149,9 +149,9 @@ public class API {
         return partInEvents;
     }
 
-    public static Event getEventById(String eventId) {
+    public static Event getEventById(int eventId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from event where id = ?", new String[]{eventId});
+        Cursor cursor = db.rawQuery("select * from event where id = ?", new String[]{Integer.toString(eventId)});
         Event event = new Event();
         if (cursor.moveToFirst()) {
             do {
@@ -199,7 +199,6 @@ public class API {
     }
 
     public static List<String> getPartInPeopleByEventId(int event_id) {
-        Event event = getEventById(Integer.toString(event_id));
         List<String> partInPeoples = new ArrayList<>();
         //add part in members
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -214,7 +213,17 @@ public class API {
         return partInPeoples;
     }
 
-    public static int insertEvent(int managerId, String title, long time, int timeStat, String location) {
+    public static int insertEvent(Event event) {
+        int managerId = event.getManegerId();
+        String title = event.getTitle();
+        long time = event.getTime();
+        String location = event.getLocation();
+        int timeStat;
+        if (event.isTimeStat()) {
+            timeStat = 1;
+        } else {
+            timeStat = 0;
+        }
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues va = new ContentValues();
         va.put("manager", managerId);
