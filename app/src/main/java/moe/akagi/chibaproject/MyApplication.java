@@ -24,7 +24,7 @@ public class MyApplication extends Application {
         API.init(getApplicationContext());
         SharedPreferences pref = getSharedPreferences("AppData", MODE_PRIVATE);
         if (!pref.getBoolean("init", false)) {
-//            API.initInsert();
+            API.initInsert();
             SharedPreferences.Editor editor = getSharedPreferences("AppData", MODE_PRIVATE).edit();
             editor.putBoolean("init", true);
             editor.apply();

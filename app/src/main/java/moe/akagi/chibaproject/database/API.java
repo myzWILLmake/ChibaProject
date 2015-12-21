@@ -6,13 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Person;
-import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.datatype.User;
 import moe.akagi.chibaproject.datatype.Vote;
 
