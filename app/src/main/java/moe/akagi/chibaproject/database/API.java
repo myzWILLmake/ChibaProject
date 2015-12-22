@@ -342,4 +342,21 @@ public class API {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete("decision", "id = ?", new String[]{Integer.toString(decisionId)});
     }
+
+    public static void updateEventByDecision(Decision decision) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        switch (decision.getType()) {
+            case Decision.TYPE_TIME:
+            case Decision.TYPE_DATE:
+                values.put("time",Long.valueOf(decision.getContent()));
+                values.put("time_stat",1);
+                break;
+            case Decision.TYPE_LOCA:
+                values.put("location",decision.getContent());
+                values.put("state",1);
+                break;
+        }
+        db.update("event", values, "id = ?", new String[]{Integer.toString(decision.getEventId())});
+    }
 }

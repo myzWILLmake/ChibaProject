@@ -306,6 +306,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
                     tEvent.setLocation(content);
                     break;
             }
+            API.updateEventByDecision(tDecision);
             eventDetailCard = new EventDetailInfo(this, tEvent);
             cardView.refreshCard(eventDetailCard);
             deleteDecisionCard(decisionId);
