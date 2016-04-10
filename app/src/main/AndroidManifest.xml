@@ -22,5 +22,6 @@
         <activity android:name=".activity.AllFriends"/>
         <activity android:name=".activity.EventDetail" />
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 </manifest>
