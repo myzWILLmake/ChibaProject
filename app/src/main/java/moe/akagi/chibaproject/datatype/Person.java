@@ -6,10 +6,19 @@ import java.util.List;
  * Created by yunze on 12/1/15.
  */
 public class Person {
+    private  String _id;
     private int id;
     private String phone;
     private String nickname;
     private List<String> lanuchEventIds;
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
 
     public int getId() {
         return id;
