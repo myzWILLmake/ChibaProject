@@ -31,6 +31,7 @@ public class API {
                     jsonObj.put("pass", password);
                     String res;
                     res = Utils.submitPostData("/auth", jsonObj.toString());
+                    Log.v("res", res);
                     jsonObj = new JSONObject(res);
                     if (jsonObj.has("error")) {
                         int state = jsonObj.getInt("error");

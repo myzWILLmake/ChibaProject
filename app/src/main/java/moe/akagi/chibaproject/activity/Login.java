@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.design.widget.TextInputLayout;
 import android.util.Log;
 import android.view.View;
@@ -59,6 +60,7 @@ public class Login extends Activity {
     }
 
     private void submitLogin(final String phone, final String password) {
+        Toast.makeText(this, "正在登陆...", Toast.LENGTH_SHORT).show();
         Manager manager = new Manager();
         manager.addDataListener(new DataListener() {
             @Override
@@ -86,6 +88,7 @@ public class Login extends Activity {
             setResult(RESULT_OK, intent);
             ActivityCollector.removeActivity(this);
         } else {
+            Looper.prepare();
             int state = (Integer)data;
             switch (state) {
                 case 101:
@@ -100,6 +103,7 @@ public class Login extends Activity {
                 default:
                     Toast.makeText(this, "返回了未知的状态", Toast.LENGTH_SHORT).show();
             }
+            Looper.loop();
         }
     }
 
