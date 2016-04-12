@@ -21,7 +21,7 @@ public class API {
 
     private static ExecutorService exec = Executors.newCachedThreadPool();
 
-    public static void submitLogin(final Manager manager, final String phone, final String password) {
+    public static void getUserByAuth(final Manager manager, final String phone, final String password) {
         exec.execute(new Runnable() {
             @Override
             public void run() {
@@ -41,6 +41,7 @@ public class API {
 
                     User user = new User();
                     user.set_id(jsonObj.getString("_id"));
+                    user.setPassword(password);
                     user.setPhone(jsonObj.getString("phone"));
                     user.setNickname(jsonObj.getString("nickname"));
                     manager.dataReady(user);

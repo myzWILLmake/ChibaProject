@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.support.design.widget.TextInputLayout;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +34,42 @@ public class Login extends Activity {
     TextInputLayout phoneInputLayout;
     TextInputLayout passwordInputLayout;
     Button submit;
+
+    Handler handler = new LoginHandler();
+
+    public class LoginHandler extends Handler {
+
+        public static final int LOGIN_SUCC = 100;
+        public static final int LOGIN_FAIL_LOGGED = 101;
+        public static final int LOGIN_FAIL_WRONG_PASS = 102;
+        public static final int LOGIN_FAIL_SOMETHING_WRONG = 110;
+
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case LOGIN_SUCC:
+                    Toast.makeText(Login.this, "登录成功!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("login_succeed", true);
+                    setResult(RESULT_OK, intent);
+                    ActivityCollector.removeActivity(Login.this);
+                    break;
+                case LOGIN_FAIL_LOGGED:
+                    Toast.makeText(Login.this, "已经登陆了啊?", Toast.LENGTH_SHORT).show();
+                    break;
+                case LOGIN_FAIL_WRONG_PASS:
+                    Toast.makeText(Login.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
+                    break;
+                case LOGIN_FAIL_SOMETHING_WRONG:
+                    Toast.makeText(Login.this, "有些不对劲!", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    Toast.makeText(Login.this, "返回了未知的状态", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +106,7 @@ public class Login extends Activity {
                 handleLogin(data, phone, password);
             }
         });
-        API.submitLogin(manager, phone, password);
+        API.getUserByAuth(manager, phone, password);
     }
 
     private void handleLogin(Object data, String phone, String password) {
@@ -83,27 +121,14 @@ public class Login extends Activity {
             editor.putString("phone", phone);
             editor.putString("password", password);
             editor.apply();
-            Intent intent = new Intent();
-            intent.putExtra("login_succeed", true);
-            setResult(RESULT_OK, intent);
-            ActivityCollector.removeActivity(this);
+            Message msg = new Message();
+            msg.what = LoginHandler.LOGIN_SUCC;
+            handler.sendMessage(msg);
         } else {
-            Looper.prepare();
             int state = (Integer)data;
-            switch (state) {
-                case 101:
-                    Toast.makeText(this, "已经登陆了啊?", Toast.LENGTH_SHORT).show();
-                    break;
-                case 102:
-                    Toast.makeText(this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
-                    break;
-                case 110:
-                    Toast.makeText(this, "有些不对劲!", Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    Toast.makeText(this, "返回了未知的状态", Toast.LENGTH_SHORT).show();
-            }
-            Looper.loop();
+            Message msg = new Message();
+            msg.what = state;
+            handler.sendMessage(msg);
         }
     }
 
