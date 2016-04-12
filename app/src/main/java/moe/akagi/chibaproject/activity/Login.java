@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.TextInputLayout;
 import android.util.Log;
@@ -13,14 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.Map;
-
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.datatype.User;
 import moe.akagi.chibaproject.network.API;
 import moe.akagi.chibaproject.network.RetrieveData.DataListener;
-import moe.akagi.chibaproject.network.RetrieveData.Manager;
+import moe.akagi.chibaproject.network.RetrieveData.DataManager;
 //import moe.akagi.chibaproject.database.API;
 
 
@@ -99,14 +96,14 @@ public class Login extends Activity {
 
     private void submitLogin(final String phone, final String password) {
         Toast.makeText(this, "正在登陆...", Toast.LENGTH_SHORT).show();
-        Manager manager = new Manager();
-        manager.addDataListener(new DataListener() {
+        DataManager dataManager = new DataManager();
+        dataManager.addDataListener(new DataListener() {
             @Override
             public void onDataReady(Object data) {
                 handleLogin(data, phone, password);
             }
         });
-        API.getUserByAuth(manager, phone, password);
+        API.getUserByAuth(dataManager, phone, password);
     }
 
     private void handleLogin(Object data, String phone, String password) {

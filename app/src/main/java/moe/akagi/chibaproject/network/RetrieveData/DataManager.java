@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Created by yunze on 4/10/16.
  */
-public class Manager {
+public class DataManager {
     private DataListener listener;
 
     public void addDataListener(DataListener listener) {
