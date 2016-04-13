@@ -3,9 +3,8 @@ package moe.akagi.chibaproject.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.TextInputLayout;
 import android.util.Log;
 import android.view.View;
@@ -16,10 +15,6 @@ import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.datatype.User;
 import moe.akagi.chibaproject.network.API;
-import moe.akagi.chibaproject.network.RetrieveData.DataListener;
-import moe.akagi.chibaproject.network.RetrieveData.DataManager;
-//import moe.akagi.chibaproject.database.API;
-
 
 /**
  * Created by yunze on 12/5/15.
@@ -31,42 +26,6 @@ public class Login extends Activity {
     TextInputLayout phoneInputLayout;
     TextInputLayout passwordInputLayout;
     Button submit;
-
-    Handler handler = new LoginHandler();
-
-    public class LoginHandler extends Handler {
-
-        public static final int LOGIN_SUCC = 100;
-        public static final int LOGIN_FAIL_LOGGED = 101;
-        public static final int LOGIN_FAIL_WRONG_PASS = 102;
-        public static final int LOGIN_FAIL_SOMETHING_WRONG = 110;
-
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case LOGIN_SUCC:
-                    Toast.makeText(Login.this, "登录成功!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent();
-                    intent.putExtra("login_succeed", true);
-                    setResult(RESULT_OK, intent);
-                    ActivityCollector.removeActivity(Login.this);
-                    break;
-                case LOGIN_FAIL_LOGGED:
-                    Toast.makeText(Login.this, "已经登陆了啊?", Toast.LENGTH_SHORT).show();
-                    break;
-                case LOGIN_FAIL_WRONG_PASS:
-                    Toast.makeText(Login.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
-                    break;
-                case LOGIN_FAIL_SOMETHING_WRONG:
-                    Toast.makeText(Login.this, "有些不对劲!", Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    Toast.makeText(Login.this, "返回了未知的状态", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +42,8 @@ public class Login extends Activity {
             public void onClick(View v) {
                 String sphone = phoneInputLayout.getEditText().getText().toString();
                 String spassword = passwordInputLayout.getEditText().getText().toString();
-                submitLogin(sphone, spassword);
+                LoginTask task = new LoginTask();
+                task.execute(sphone, spassword);
             }
         });
     }
@@ -94,42 +54,6 @@ public class Login extends Activity {
         ActivityCollector.removeActivity(this);
     }
 
-    private void submitLogin(final String phone, final String password) {
-        Toast.makeText(this, "正在登陆...", Toast.LENGTH_SHORT).show();
-        DataManager dataManager = new DataManager();
-        dataManager.addDataListener(new DataListener() {
-            @Override
-            public void onDataReady(Object data) {
-                handleLogin(data, phone, password);
-            }
-        });
-        API.getUserByAuth(dataManager, phone, password);
-    }
-
-    private void handleLogin(Object data, String phone, String password) {
-        if (data instanceof User) {
-            User user = (User)data;
-            Log.v("login", user.get_id());
-            Log.v("login", user.getNickname());
-            Log.v("login", user.getPhone());
-            MyApplication.user = user;
-            SharedPreferences.Editor editor = getSharedPreferences("AppData", MODE_PRIVATE).edit();
-            editor.putBoolean("logged", true);
-            editor.putString("phone", phone);
-            editor.putString("password", password);
-            editor.apply();
-            Message msg = new Message();
-            msg.what = LoginHandler.LOGIN_SUCC;
-            handler.sendMessage(msg);
-        } else {
-            int state = (Integer)data;
-            Message msg = new Message();
-            msg.what = state;
-            handler.sendMessage(msg);
-        }
-    }
-
-
     @Override
     public void onBackPressed() {
         switch (backPressed) {
@@ -139,6 +63,72 @@ public class Login extends Activity {
                 break;
             case 1:
                 ActivityCollector.finishAll();
+        }
+    }
+
+    private class LoginTask extends AsyncTask<String, Integer, Integer> {
+
+        public static final int LOGIN_SUCC = 100;
+        public static final int LOGIN_FAIL_LOGGED = 101;
+        public static final int LOGIN_FAIL_WRONG_ACCO = 102;
+        public static final int LOGIN_FAIL_WRONG_PASS = 103;
+        public static final int LOGIN_FAIL_SOMETHING_WRONG = 110;
+
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(Login.this, "正在登陆...", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String phone = params[0];
+            String password = params[1];
+            Object res = API.getUserByAuth(phone, password);
+            if (res instanceof User) {
+                User user = (User)res;
+                Log.v("login", user.get_id());
+                Log.v("login", user.getNickname());
+                Log.v("login", user.getPhone());
+                MyApplication.user = user;
+                SharedPreferences.Editor editor = getSharedPreferences("AppData", MODE_PRIVATE).edit();
+                editor.putBoolean("logged", true);
+                editor.putString("phone", phone);
+                editor.putString("password", password);
+                editor.apply();
+                return LOGIN_SUCC;
+            } else if (res instanceof Integer) {
+                return (Integer)res;
+            } else {
+                Log.v("Login", "Something wrong! return null in LoginTask.");
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case LOGIN_SUCC:
+                    Toast.makeText(Login.this, "登录成功!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("login_succeed", true);
+                    setResult(RESULT_OK, intent);
+                    ActivityCollector.removeActivity(Login.this);
+                    break;
+                case LOGIN_FAIL_LOGGED:
+                    Toast.makeText(Login.this, "已经登陆了啊?", Toast.LENGTH_SHORT).show();
+                    break;
+                case LOGIN_FAIL_WRONG_ACCO:
+                case LOGIN_FAIL_WRONG_PASS:
+                    Toast.makeText(Login.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
+                    break;
+                case LOGIN_FAIL_SOMETHING_WRONG:
+                    Toast.makeText(Login.this, "有些不对劲!", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    Toast.makeText(Login.this, "返回了未知的状态", Toast.LENGTH_SHORT).show();
+                    break;
+            }
         }
     }
 }
