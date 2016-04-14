@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,9 +33,9 @@ import it.gmariotti.cardslib.library.view.CardListView;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.card.EventBriefInfo;
-import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.User;
+import moe.akagi.chibaproject.network.API;
 
 /**
  * Created by yunze on 11/30/15.
@@ -47,6 +49,11 @@ public class Main extends AppCompatActivity {
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
     NavigationView navigation;
+
+    protected int taskCount = 0;
+    protected final Object lock = new Object();
+
+    protected List<Card> cards;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -92,7 +99,7 @@ public class Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityCollector.addActivity(this);
         initLayout();
-        SharedPreferences pref = getSharedPreferences("AppData", MODE_PRIVATE);
+        /*SharedPreferences pref = getSharedPreferences("AppData", MODE_PRIVATE);
         if (!pref.getBoolean("logged", false)) {
             Intent intent = new Intent(Main.this, Login.class);
             startActivityForResult(intent, LOGIN_ACTIVITY);
@@ -100,6 +107,13 @@ public class Main extends AppCompatActivity {
             String phone = pref.getString("phone", null);
             String password = pref.getString("password", null);
             MyApplication.user = API.getUserByAuth(phone, password);
+            refreshUserInfo();
+            createCardList();
+        }*/
+        if (MyApplication.user == null) {
+            Intent intent = new Intent(Main.this, Login.class);
+            startActivityForResult(intent, LOGIN_ACTIVITY);
+        } else {
             refreshUserInfo();
             createCardList();
         }
@@ -148,17 +162,14 @@ public class Main extends AppCompatActivity {
 
     private void createCardList() {
 
+        cards = new ArrayList<Card>();
+
         User user = MyApplication.user;
-        user.setPartInEventIds((API.getPartInEventsByPersonId(user.getId())));
+        GetPartInEventsTask partInEventsTask = new GetPartInEventsTask();
+        partInEventsTask.execute(user.get_id());
+    }
 
-        ArrayList<Card> cards = new ArrayList<Card>();
-
-        List<String> partInEvents = MyApplication.user.getPartInEventIds();
-        for (String partInEvent : partInEvents) {
-            Event event = API.getEventById(Integer.parseInt(partInEvent));
-            EventBriefInfo card = new EventBriefInfo(getContext(),event);
-            cards.add(card);
-        }
+    private void refreshCardList() {
 
         //Set card in the cardView
         CardArrayAdapter mCardArrayAdapter = new CardArrayAdapter(getActivity(),cards);
@@ -229,5 +240,113 @@ public class Main extends AppCompatActivity {
 
     private Activity getActivity() {
         return this;
+    }
+
+    private class GetPartInEventsTask extends AsyncTask<String, Integer, Integer> {
+
+        public static final int SUCC = 100;
+        public static final int FAIL_NOT_LOGGED = 101;
+        public static final int FAIL_NOT_FIND_PERSON = 102;
+        public static final int FAIL_SOMETHING_WRONG = 110;
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String person_id = params[0];
+            Object res = API.getPartInEventsByPersonId(person_id);
+
+            if (res instanceof List) {
+                User user = MyApplication.user;
+                List<String> partInEvents = (List<String>)res;
+                user.setPartInEventIds(partInEvents);
+                return SUCC;
+            } else if (res instanceof Integer) {
+                return (Integer)res;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            if (integer == null) return;
+            switch (integer) {
+                case SUCC:
+                    List<String> partInEvents = MyApplication.user.getPartInEventIds();
+                    synchronized (lock) {
+                        taskCount = 0;
+                    }
+                    for (String partInEvent : partInEvents) {
+                        GetEventTask getEventTask = new GetEventTask();
+                        getEventTask.execute(partInEvent);
+                    }
+                    break;
+                case FAIL_NOT_LOGGED:
+                    Log.v("GetPartInEvent", "Not logged!");
+                    break;
+                case FAIL_NOT_FIND_PERSON:
+                    Log.v("GetPartInEvent", "Not find person / wrong person_id");
+                    break;
+                case FAIL_SOMETHING_WRONG:
+                    Log.v("GetPartInEvent", "Something wrong in Server");
+                    break;
+                default:
+            }
+        }
+    }
+
+    private class GetEventTask extends AsyncTask<String, Integer, Object> {
+
+        public static final int SUCC = 100;
+        public static final int FAIL_NOT_LOGGED = 101;
+        public static final int FAIL_WRONG_ID = 102;
+        public static final int FAIL_SOMETHING_WRONG = 110;
+
+        @Override
+        protected Object doInBackground(String... params) {
+
+            String event_id = params[0];
+            Object res = API.getEventById(event_id);
+
+            if (res instanceof Event) {
+                Event event = (Event)res;
+                synchronized (lock) {
+                    taskCount++;
+                }
+                return event;
+            } else if (res instanceof Integer) {
+                return res;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object obj) {
+            if (obj != null) {
+                if (obj instanceof Event) {
+                    Event event = (Event) obj;
+                    EventBriefInfo card = new EventBriefInfo(getContext(), event);
+                    cards.add(card);
+                    synchronized (lock) {
+                        if (taskCount == MyApplication.user.getPartInEventIds().size()) {
+                            refreshCardList();
+                        }
+                    }
+                } else if (obj instanceof Integer) {
+                    switch ((Integer)obj) {
+                        case SUCC:
+                            break;
+                        case FAIL_NOT_LOGGED:
+                            Log.v("GetEvent", "Not logged!");
+                            break;
+                        case FAIL_WRONG_ID:
+                            Log.v("GetEvent", "Not find event / wrong event_id");
+                            break;
+                        case FAIL_SOMETHING_WRONG:
+                            Log.v("GetEvent", "Something wrong in Server");
+                            break;
+                    }
+                }
+            }
+
+        }
     }
 }

@@ -1,23 +1,15 @@
 package moe.akagi.chibaproject.network;
 
-import android.os.StrictMode;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Iterator;
@@ -40,7 +32,7 @@ public class Utils {
     }
 
     public static void configConnection(HttpURLConnection connection) throws ProtocolException {
-        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        //CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
         connection.setConnectTimeout(5000);
         connection.setDoOutput(true);
         connection.setDoInput(true);
@@ -73,6 +65,8 @@ public class Utils {
             sb.append(line + "\n");
         }
         connection.disconnect();
-        return sb.toString();
+        String res = sb.toString();
+        Log.v("res", res);
+        return res;
     }
 }

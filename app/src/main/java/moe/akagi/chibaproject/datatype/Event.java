@@ -15,7 +15,9 @@ public class Event implements Serializable{
     public final static int CANCEL = 3; // 取消
 
     private int id;
+    private String _id;
     private int manegerId;
+    private String manager_id;
     private String title;
     private long time;
     private boolean timeStat;
@@ -27,6 +29,14 @@ public class Event implements Serializable{
 
     public Event() {
         memberIds = new ArrayList<String>();
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public int getId() {
@@ -43,6 +53,14 @@ public class Event implements Serializable{
 
     public void setManegerId(int manegerId) {
         this.manegerId = manegerId;
+    }
+
+    public String getManager_id() {
+        return manager_id;
+    }
+
+    public void setManager_id(String manager_id) {
+        this.manager_id = manager_id;
     }
 
     public String getTitle() {
