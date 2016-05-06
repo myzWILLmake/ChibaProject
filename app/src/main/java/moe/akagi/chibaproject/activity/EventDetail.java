@@ -2,20 +2,17 @@ package moe.akagi.chibaproject.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.joanzapata.iconify.IconDrawable;
@@ -27,10 +24,8 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.recyclerview.internal.CardArrayRecyclerViewAdapter;
 import it.gmariotti.cardslib.library.recyclerview.view.CardRecyclerView;
-import it.gmariotti.cardslib.library.view.CardListView;
 import it.gmariotti.cardslib.library.view.CardViewNative;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
@@ -65,7 +60,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     ArrayList<Card>  cardList;
     CardArrayRecyclerViewAdapter decisionArrayAdapter;
 
-    private boolean toggleAdmin;
+    private boolean adminMode;
     private boolean isAdmin;
 
     private static class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MViewHolder> {
@@ -250,19 +245,19 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     }
 
     private void toggleAdmin(MenuItem item) {
-        toggleAdmin = !toggleAdmin;
-        if (toggleAdmin) {
+        adminMode = !adminMode;
+        if (adminMode) {
             item.setTitle("退出管理");
         } else {
             item.setTitle("管理模式");
         }
         for (DecisionCard card : decisionCardList) {
-            card.toggleView(toggleAdmin);
+            card.setUpViewByIsAdmin(isAdminMode());
         }
     }
 
-    public  boolean isAdmin() {
-        return toggleAdmin;
+    public  boolean isAdminMode() {
+        return adminMode;
     }
 
     private void deleteDecisionCard(int decisionId) {
@@ -286,8 +281,8 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         decisionArrayAdapter.notifyItemInserted(cardList.size() - 1);
     }
 
-    public void toggleAgree(boolean isClicked,int decisionId) {
-        if (!toggleAdmin) {
+    public void toggleAgree(Boolean isClicked, int decisionId) {
+        if (!adminMode) {
             if (!isClicked) {
                 API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
             } else {
@@ -313,8 +308,8 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         }
     }
 
-    public void toggleDisagree(boolean isClicked, int decisionId) {
-        if (!toggleAdmin) {
+    public void toggleDisagree(Boolean isClicked, int decisionId) {
+        if (!adminMode) {
             if (!isClicked) {
                 API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
             } else {
