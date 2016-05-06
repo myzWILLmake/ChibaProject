@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+
+        <import type="moe.akagi.chibaproject.button.DecisionCardButton" />
+
+        <import type="moe.akagi.chibaproject.card.DecisionCard" />
+
+
+        <variable
+            name="agreeBtn"
+            type="DecisionCardButton"
+            />
+        <variable
+            name="disagreeBtn"
+            type="DecisionCardButton"
+            />
+        <variable
+            name="agreeNum"
+            type="android.databinding.ObservableInt"
+           />
+        <variable
+            name="disagreeNum"
+            type="android.databinding.ObservableInt"
+            />
+    </data>
+<RelativeLayout
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <RelativeLayout
@@ -27,7 +52,9 @@
                 android:layout_toEndOf="@+id/decision_card_sponsor_image"
                 android:layout_alignTop="@+id/decision_card_sponsor_image"
                 style="@style/decision_card_nickname"
-                android:id="@+id/decision_card_sponsor_nickname"/>
+                android:id="@+id/decision_card_sponsor_nickname"
+                android:paddingLeft="5dp"
+                android:layout_toRightOf="@+id/decision_card_sponsor_image" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,7 +62,9 @@
                 android:layout_toEndOf="@id/decision_card_sponsor_image"
                 android:layout_alignBottom="@id/decision_card_sponsor_image"
                 android:id="@+id/decision_card_type"
-                style="@style/decision_card_type" />
+                style="@style/decision_card_type"
+                android:paddingLeft="5dp"
+                android:layout_toRightOf="@id/decision_card_sponsor_image" />
         </RelativeLayout>
         <TextView
             android:layout_width="match_parent"
@@ -48,7 +77,8 @@
             android:textAlignment="viewEnd"
             android:textSize="28sp"
             android:textColor="@color/black"
-            android:text="12月23日"/>
+            android:text="12月23日"
+            android:layout_toRightOf="@id/decision_card_sponsor" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -73,6 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/decision_card_agree_num"
+            android:text="@{String.valueOf(agreeNum.get())}"
             android:layout_toEndOf="@id/decision_card_agree_icon"
             android:layout_alignBaseline="@+id/decision_card_agree_icon"
             />
@@ -80,8 +111,8 @@
         <com.joanzapata.iconify.widget.IconTextView
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="2dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="2dp"
             android:id="@+id/decision_card_disagree_icon"
             android:layout_alignBottom="@+id/decision_card_agree_icon"
             android:layout_toEndOf="@+id/decision_card_agree_num"
@@ -93,6 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/decision_card_disagree_num"
+            android:text="@{String.valueOf(disagreeNum.get())}"
             android:layout_toEndOf="@id/decision_card_disagree_icon"
             android:layout_alignBaseline="@+id/decision_card_disagree_icon"
             />
@@ -100,7 +132,7 @@
 
 
 
-    <moe.akagi.chibaproject.button.DecisionCardAgreeButton
+    <moe.akagi.chibaproject.button.DecisionCardButton
         android:layout_width="70dp"
         android:layout_height="32dp"
         android:id="@+id/decision_card_agree_button"
@@ -108,13 +140,14 @@
         android:layout_alignTop="@+id/decision_card_disagree_button"
         android:layout_toStartOf="@+id/decision_card_disagree_button"
         android:layout_marginEnd="5dp"
-        android:text="@string/agree_member"
-        android:textColor="@color/green"
-        android:background="@color/whiteBg"
+        android:text="@string/agree_icon"
+        android:textColor="@{agreeBtn.clicked ? @color/white_pressed : @color/green}"
+        android:background="@{agreeBtn.clicked ? @color/green : @color/white_bg}"
         style="@style/decision_card_button"
-    />
+        android:layout_toLeftOf="@+id/decision_card_disagree_button"
+        android:layout_marginRight="5dp" />
 
-    <moe.akagi.chibaproject.button.DecisionCardDisagreeButton
+    <moe.akagi.chibaproject.button.DecisionCardButton
         android:layout_width="70dp"
         android:layout_height="32dp"
         android:id="@+id/decision_card_disagree_button"
@@ -124,9 +157,10 @@
         android:layout_alignEnd="@+id/decision_card_relative_layout"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
-        android:text="@string/disagree_member"
-        android:textColor="@color/red"
-        android:background="@color/whiteBg"
+        android:text="@string/disagree_icon"
+        android:textColor="@{disagreeBtn.clicked ? @color/white_pressed : @color/red}"
+        android:background="@{disagreeBtn.clicked ? @color/red : @color/white_bg}"
         style="@style/decision_card_button"
-        />
+        android:layout_alignRight="@+id/decision_card_relative_layout" />
 </RelativeLayout>
+    </layout>
