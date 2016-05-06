@@ -9,9 +9,9 @@
     <string name="close_drawer">close_drawer</string>
     <string name="please_input_location">请输入地点</string>
     <string name="submit">确认</string>
-    <string name="agree_member">{fa-check}</string>
+    <string name="agree_icon">{fa-check}</string>
     <string name="agree_admin">通过</string>
-    <string name="disagree_member">{fa-remove}</string>
+    <string name="disagree_icon">{fa-remove}</string>
     <string name="disagree_admin">否决</string>
 
 </resources>
