@@ -4,9 +4,6 @@
 
         <import type="moe.akagi.chibaproject.button.DecisionCardButton" />
 
-        <import type="moe.akagi.chibaproject.card.DecisionCard" />
-
-
         <variable
             name="agreeBtn"
             type="DecisionCardButton"
@@ -23,6 +20,10 @@
             name="disagreeNum"
             type="android.databinding.ObservableInt"
             />
+
+        <variable
+            name="isAdminMode"
+            type="android.databinding.ObservableBoolean" />
     </data>
 <RelativeLayout
     android:layout_width="match_parent" android:layout_height="match_parent">
@@ -140,8 +141,9 @@
         android:layout_alignTop="@+id/decision_card_disagree_button"
         android:layout_toStartOf="@+id/decision_card_disagree_button"
         android:layout_marginEnd="5dp"
-        android:text="@string/agree_icon"
+        android:text="@{isAdminMode.get() ? @string/agree_admin_mode : @string/agree_not_admin_mode}"
         android:textColor="@{agreeBtn.clicked ? @color/white_pressed : @color/green}"
+        android:textSize='@{isAdminMode.get() ? 10 : 15}'
         android:background="@{agreeBtn.clicked ? @color/green : @color/white_bg}"
         style="@style/decision_card_button"
         android:layout_toLeftOf="@+id/decision_card_disagree_button"
@@ -156,9 +158,9 @@
         android:layout_alignParentRight="true"
         android:layout_alignEnd="@+id/decision_card_relative_layout"
         android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="@string/disagree_icon"
+        android:text="@{isAdminMode.get() ? @string/disagree_admin_mode : @string/disagree_not_admin_mode}"
         android:textColor="@{disagreeBtn.clicked ? @color/white_pressed : @color/red}"
+        android:textSize='@{isAdminMode.get() ? 10 : 15}'
         android:background="@{disagreeBtn.clicked ? @color/red : @color/white_bg}"
         style="@style/decision_card_button"
         android:layout_alignRight="@+id/decision_card_relative_layout" />
