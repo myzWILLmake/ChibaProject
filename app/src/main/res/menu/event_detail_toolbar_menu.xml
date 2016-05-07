@@ -3,6 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/event_detail_toolbar_menu"
-        android:title="管理模式"
+        android:title="@string/menu_not_admin_mode"
         app:showAsAction="ifRoom" />
 </menu>
