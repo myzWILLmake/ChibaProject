@@ -2,7 +2,9 @@ package moe.akagi.chibaproject.card;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -88,43 +90,52 @@ public class DecisionCard extends Card{
 
         contentTextView.setText(content);
 
-        setUpViewByIsAdmin(((EventDetail)getContext()).isAdminMode());
+        setUpViewByIsAdmin(((EventDetail)getContext()).mIsAdminMode());
 
-        // Databinding for button
+//         Databinding for button
         DecisionCardBinding decisionCardBinding = DataBindingUtil.bind(view);
         decisionCardBinding.setAgreeBtn(agreeButton);
         decisionCardBinding.setDisagreeBtn(disagreeButton);
         decisionCardBinding.setAgreeNum(this.agreeNum);
         decisionCardBinding.setDisagreeNum(this.disagreeNum);
+        decisionCardBinding.setIsAdminMode(((EventDetail) getContext()).isAdminMode());
 
         // bind button onClickListener
         agreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!disagreeButton.mIsClicked()) {
-                    if(!agreeButton.mIsClicked()){
-                        mSetAgreeNum(mGetAgreeNum()+1);
-                        API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
-                    }else{
-                        mSetAgreeNum(mGetAgreeNum()-1);
-                        API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
+                if (!((EventDetail) getContext()).mIsAdminMode()) {
+                    if (!disagreeButton.mIsClicked()) {
+                        if(!agreeButton.mIsClicked()){
+                            mSetAgreeNum(mGetAgreeNum()+1);
+                            API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
+                        }else{
+                            mSetAgreeNum(mGetAgreeNum()-1);
+                            API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
+                        }
+                        agreeButton.toggleClicked();
                     }
-                    agreeButton.toggleClicked();
+                }else{
+                    ((EventDetail) getContext()).passDecision(getDecisionId());
                 }
             }
         });
         disagreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!agreeButton.mIsClicked()) {
-                    if(!disagreeButton.mIsClicked()){
-                        mSetDisagreeNum(mGetDisagreeNum()+1);
-                        API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
-                    }else{
-                        mSetDisagreeNum(mGetDisagreeNum()-1);
-                        API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
+                if (!((EventDetail) getContext()).mIsAdminMode()) {
+                    if (!agreeButton.mIsClicked()) {
+                        if(!disagreeButton.mIsClicked()){
+                            mSetDisagreeNum(mGetDisagreeNum()+1);
+                            API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
+                        }else{
+                            mSetDisagreeNum(mGetDisagreeNum()-1);
+                            API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
+                        }
+                        disagreeButton.toggleClicked();
                     }
-                    disagreeButton.toggleClicked();
+                }else{
+                    ((EventDetail) getContext()).denyDecision(getDecisionId());
                 }
             }
         });

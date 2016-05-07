@@ -2,6 +2,7 @@ package moe.akagi.chibaproject.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -60,7 +61,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     ArrayList<Card>  cardList;
     CardArrayRecyclerViewAdapter decisionArrayAdapter;
 
-    private boolean adminMode;
+    private ObservableBoolean adminMode = new ObservableBoolean(false);
     private boolean isAdmin;
 
     private static class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MViewHolder> {
@@ -162,6 +163,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
     private void initLayout() {
         setContentView(R.layout.event_layout);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.event_detail_activity_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -245,19 +247,15 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     }
 
     private void toggleAdmin(MenuItem item) {
-        adminMode = !adminMode;
-        if (adminMode) {
-            item.setTitle("退出管理");
+        toogleAdminMode();
+        if (mIsAdminMode()) {
+            item.setTitle(R.string.menu_admin_mode);
         } else {
-            item.setTitle("管理模式");
+            item.setTitle(R.string.menu_not_admin_mode);
         }
         for (DecisionCard card : decisionCardList) {
-            card.setUpViewByIsAdmin(isAdminMode());
+            card.setUpViewByIsAdmin(mIsAdminMode());
         }
-    }
-
-    public  boolean isAdminMode() {
-        return adminMode;
     }
 
     private void deleteDecisionCard(int decisionId) {
@@ -281,14 +279,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         decisionArrayAdapter.notifyItemInserted(cardList.size() - 1);
     }
 
-    public void toggleAgree(Boolean isClicked, int decisionId) {
-        if (!adminMode) {
-            if (!isClicked) {
-                API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
-            } else {
-                API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
-            }
-        }else {
+    public void passDecision(int decisionId) {
             Decision tDecision = API.getDecisionById(decisionId);
             String content = tDecision.getContent();
             Event tEvent = this.event;
@@ -305,19 +296,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             eventDetailCard = new EventDetailInfo(this, tEvent);
             cardView.refreshCard(eventDetailCard);
             deleteDecisionCard(decisionId);
-        }
     }
 
-    public void toggleDisagree(Boolean isClicked, int decisionId) {
-        if (!adminMode) {
-            if (!isClicked) {
-                API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
-            } else {
-                API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
-            }
-        }else{
+    public void denyDecision(int decisionId) {
             deleteDecisionCard(decisionId);
-        }
     }
 
     @Override
@@ -376,5 +358,25 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         bundle.putSerializable("event",event);
         intent.putExtras(bundle);
         context.startActivity(intent);
+    }
+
+    public ObservableBoolean isAdminMode() {
+        return adminMode;
+    }
+
+    public void setAdminMode(ObservableBoolean adminMode) {
+        this.adminMode = adminMode;
+    }
+
+    public boolean mIsAdminMode(){
+        return adminMode.get();
+    }
+
+    public void mSetAdminMode(boolean adminMode) {
+        this.adminMode.set(adminMode);
+    }
+
+    public void toogleAdminMode(){
+        this.adminMode.set(!mIsAdminMode());
     }
 }
