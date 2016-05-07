@@ -34,7 +34,6 @@
 
     <style name="decision_card_button">
         <item name="android:gravity">center</item>
-        <item name="android:textSize">15sp</item>
     </style>
 
 </resources>
