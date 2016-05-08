@@ -1,6 +1,9 @@
 package moe.akagi.chibaproject.card;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
+import android.databinding.ObservableInt;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +17,9 @@ import it.gmariotti.cardslib.library.internal.Card;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.activity.EventDetail;
-import moe.akagi.chibaproject.button.DecisionCardAgreeButton;
-import moe.akagi.chibaproject.button.DecisionCardDisagreeButton;
+import moe.akagi.chibaproject.button.DecisionCardButton;
 import moe.akagi.chibaproject.database.API;
+import moe.akagi.chibaproject.databinding.DecisionCardBinding;
 import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.datatype.Vote;
@@ -29,13 +32,15 @@ public class DecisionCard extends Card{
     private Decision decision;
     private int sponsorId;
 
+    // Data binding member
+    private ObservableInt agreeNum;
+    private ObservableInt disagreeNum;
+
     TextView nicknameTextView;
     TextView typeTextView;
     TextView contentTextView;
-    TextView agreeNumTextView;
-    TextView disagreeNumTextView;
-    DecisionCardAgreeButton agreeButton;
-    DecisionCardDisagreeButton disagreeButton;
+    DecisionCardButton agreeButton;
+    DecisionCardButton disagreeButton;
 
     public DecisionCard(Context context,Decision decision) {
         super(context, R.layout.decision_card);
@@ -52,10 +57,11 @@ public class DecisionCard extends Card{
         nicknameTextView  = (TextView) parent.findViewById(R.id.decision_card_sponsor_nickname);
         typeTextView = (TextView) parent.findViewById(R.id.decision_card_type);
         contentTextView = (TextView) parent.findViewById(R.id.decision_card_content);
-        agreeNumTextView = (TextView) parent.findViewById(R.id.decision_card_agree_num);
-        disagreeNumTextView = (TextView) parent.findViewById(R.id.decision_card_disagree_num);
-        agreeButton = (DecisionCardAgreeButton) parent.findViewById(R.id.decision_card_agree_button);
-        disagreeButton = (DecisionCardDisagreeButton) parent.findViewById(R.id.decision_card_disagree_button);
+        agreeButton = (DecisionCardButton) parent.findViewById(R.id.decision_card_agree_button);
+        disagreeButton = (DecisionCardButton) parent.findViewById(R.id.decision_card_disagree_button);
+        decision = API.getDecisionById(decision.getId());
+        this.agreeNum = new ObservableInt(decision.getAgreePersonNum());
+        this.disagreeNum = new ObservableInt(decision.getRejectPersonNum());
 
         sponsorImage.setImageResource(getSponsorImageId());
         nicknameTextView.setText(getSponsorNickName());
@@ -84,47 +90,71 @@ public class DecisionCard extends Card{
 
         contentTextView.setText(content);
 
-        setUpViewFromVoteData(((EventDetail)getContext()).isAdmin());
+        setUpViewByIsAdmin(((EventDetail)getContext()).mIsAdminMode());
+
+//         Databinding for button
+        DecisionCardBinding decisionCardBinding = DataBindingUtil.bind(view);
+        decisionCardBinding.setAgreeBtn(agreeButton);
+        decisionCardBinding.setDisagreeBtn(disagreeButton);
+        decisionCardBinding.setAgreeNum(this.agreeNum);
+        decisionCardBinding.setDisagreeNum(this.disagreeNum);
+        decisionCardBinding.setIsAdminMode(((EventDetail) getContext()).isAdminMode());
 
         // bind button onClickListener
         agreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!disagreeButton.isClicked()) {
-                    agreeButton.toggleClicked();
-                    ((EventDetail) getContext()).toggleAgree(agreeButton.isClicked(), decision.getId());
-                    decision = API.getDecisionById(decision.getId());
-                    agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
-                    agreeButton.setUpView();
+                if (!((EventDetail) getContext()).mIsAdminMode()) {
+                    if (!disagreeButton.mIsClicked()) {
+                        if(!agreeButton.mIsClicked()){
+                            mSetAgreeNum(mGetAgreeNum()+1);
+                            API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
+                        }else{
+                            mSetAgreeNum(mGetAgreeNum()-1);
+                            API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
+                        }
+                        agreeButton.toggleClicked();
+                    }
+                }else{
+                    ((EventDetail) getContext()).passDecision(getDecisionId());
                 }
             }
         });
         disagreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!agreeButton.isClicked()) {
-                    disagreeButton.toggleClicked();
-                    ((EventDetail) getContext()).toggleDisagree(disagreeButton.isClicked(), decision.getId());
-                    decision = API.getDecisionById(decision.getId());
-                    disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
-                    disagreeButton.setUpView();
+                if (!((EventDetail) getContext()).mIsAdminMode()) {
+                    if (!agreeButton.mIsClicked()) {
+                        if(!disagreeButton.mIsClicked()){
+                            mSetDisagreeNum(mGetDisagreeNum()+1);
+                            API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
+                        }else{
+                            mSetDisagreeNum(mGetDisagreeNum()-1);
+                            API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
+                        }
+                        disagreeButton.toggleClicked();
+                    }
+                }else{
+                    ((EventDetail) getContext()).denyDecision(getDecisionId());
                 }
             }
         });
     }
 
-    public void setUpViewFromVoteData(boolean toggleAdmin) {
-        Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
-        if (vote != null) {
-            if (vote.getType() == Vote.TYPE_AGREE)
-                agreeButton.setIsClicked(true);
-            else if (vote.getType() == Vote.TYPE_REJECT)
-                disagreeButton.setIsClicked(true);
+    public void setUpViewByIsAdmin(boolean adminMode) {
+        if (adminMode) {
+            agreeButton.mSetClicked(false);
+            disagreeButton.mSetClicked(false);
+        }else{
+            // Set up view from vote record
+            Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
+            if (vote != null) {
+                if (vote.getType() == Vote.TYPE_AGREE)
+                    agreeButton.mSetClicked(true);
+                else if (vote.getType() == Vote.TYPE_REJECT)
+                    disagreeButton.mSetClicked(true);
+            }
         }
-        agreeNumTextView.setText(Integer.toString(decision.getAgreePersonNum()));
-        disagreeNumTextView.setText(Integer.toString(decision.getRejectPersonNum()));
-        agreeButton.setUpView(toggleAdmin);
-        disagreeButton.setUpView(toggleAdmin);
     }
 
     public String getSponsorNickName() {
@@ -136,19 +166,41 @@ public class DecisionCard extends Card{
         return context.getResources().getIdentifier(resId, "drawable", context.getPackageName());
     }
 
-    public void toggleView(boolean toggleAdmin) {
-        agreeButton.toggleText(toggleAdmin);
-        disagreeButton.toggleText(toggleAdmin);
-        agreeButton.setUpView(toggleAdmin);
-        disagreeButton.setUpView(toggleAdmin);
-        setUpViewFromVoteData(toggleAdmin);
-        if (toggleAdmin) {
-            agreeButton.setIsClicked(false);
-            disagreeButton.setIsClicked(false);
-        }
-    }
-
     public int getDecisionId() {
         return decision.getId();
+    }
+
+    // Data Binding Getter / Setter
+
+    public ObservableInt getAgreeNum() {
+        return agreeNum;
+    }
+
+    public ObservableInt getDisagreeNum() {
+        return disagreeNum;
+    }
+
+    public void setAgreeNum(ObservableInt agreeNum) {
+        this.agreeNum = agreeNum;
+    }
+
+    public void setDisagreeNum(ObservableInt disagreeNum) {
+        this.disagreeNum = disagreeNum;
+    }
+
+    public int mGetAgreeNum() {
+        return agreeNum.get();
+    }
+
+    public int mGetDisagreeNum() {
+        return disagreeNum.get();
+    }
+
+    public void mSetAgreeNum(int agreeNum) {
+        this.agreeNum.set(agreeNum);
+    }
+
+    public void mSetDisagreeNum(int disagreeNum) {
+        this.disagreeNum.set(disagreeNum);
     }
 }

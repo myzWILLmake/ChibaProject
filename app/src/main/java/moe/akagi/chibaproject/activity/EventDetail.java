@@ -2,20 +2,18 @@ package moe.akagi.chibaproject.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
+import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.joanzapata.iconify.IconDrawable;
@@ -27,10 +25,8 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.recyclerview.internal.CardArrayRecyclerViewAdapter;
 import it.gmariotti.cardslib.library.recyclerview.view.CardRecyclerView;
-import it.gmariotti.cardslib.library.view.CardListView;
 import it.gmariotti.cardslib.library.view.CardViewNative;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
@@ -65,7 +61,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     ArrayList<Card>  cardList;
     CardArrayRecyclerViewAdapter decisionArrayAdapter;
 
-    private boolean toggleAdmin;
+    private ObservableBoolean adminMode = new ObservableBoolean(false);
     private boolean isAdmin;
 
     private static class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MViewHolder> {
@@ -167,6 +163,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
     private void initLayout() {
         setContentView(R.layout.event_layout);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.event_detail_activity_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -250,19 +247,15 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     }
 
     private void toggleAdmin(MenuItem item) {
-        toggleAdmin = !toggleAdmin;
-        if (toggleAdmin) {
-            item.setTitle("退出管理");
+        toogleAdminMode();
+        if (mIsAdminMode()) {
+            item.setTitle(R.string.menu_admin_mode);
         } else {
-            item.setTitle("管理模式");
+            item.setTitle(R.string.menu_not_admin_mode);
         }
         for (DecisionCard card : decisionCardList) {
-            card.toggleView(toggleAdmin);
+            card.setUpViewByIsAdmin(mIsAdminMode());
         }
-    }
-
-    public  boolean isAdmin() {
-        return toggleAdmin;
     }
 
     private void deleteDecisionCard(int decisionId) {
@@ -286,14 +279,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         decisionArrayAdapter.notifyItemInserted(cardList.size() - 1);
     }
 
-    public void toggleAgree(boolean isClicked,int decisionId) {
-        if (!toggleAdmin) {
-            if (!isClicked) {
-                API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
-            } else {
-                API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_AGREE));
-            }
-        }else {
+    public void passDecision(int decisionId) {
             Decision tDecision = API.getDecisionById(decisionId);
             String content = tDecision.getContent();
             Event tEvent = this.event;
@@ -310,19 +296,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             eventDetailCard = new EventDetailInfo(this, tEvent);
             cardView.refreshCard(eventDetailCard);
             deleteDecisionCard(decisionId);
-        }
     }
 
-    public void toggleDisagree(boolean isClicked, int decisionId) {
-        if (!toggleAdmin) {
-            if (!isClicked) {
-                API.deleteVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
-            } else {
-                API.insertVote(new Vote(decisionId, MyApplication.user.getId(), Vote.TYPE_REJECT));
-            }
-        }else{
+    public void denyDecision(int decisionId) {
             deleteDecisionCard(decisionId);
-        }
     }
 
     @Override
@@ -381,5 +358,25 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         bundle.putSerializable("event",event);
         intent.putExtras(bundle);
         context.startActivity(intent);
+    }
+
+    public ObservableBoolean isAdminMode() {
+        return adminMode;
+    }
+
+    public void setAdminMode(ObservableBoolean adminMode) {
+        this.adminMode = adminMode;
+    }
+
+    public boolean mIsAdminMode(){
+        return adminMode.get();
+    }
+
+    public void mSetAdminMode(boolean adminMode) {
+        this.adminMode.set(adminMode);
+    }
+
+    public void toogleAdminMode(){
+        this.adminMode.set(!mIsAdminMode());
     }
 }

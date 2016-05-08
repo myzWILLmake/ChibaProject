@@ -34,29 +34,6 @@
 
     <style name="decision_card_button">
         <item name="android:gravity">center</item>
-        <item name="android:textSize">15sp</item>
-    </style>
-    <style name="decision_card_button.agree">
-        <item name="android:text">{fa-check}</item>
-    </style>
-    <style name="decision_card_button.disagree">
-        <item name="android:text">{fa-remove}</item>
-    </style>
-    <style name="decision_card_button.agree.unchecked">
-        <item name="android:background">@color/whiteBg</item>
-        <item name="android:textColor">@color/green</item>
-    </style>
-    <style name="decision_card_button.disagree.unchecked">
-        <item name="android:background">@color/whiteBg</item>
-        <item name="android:textColor">@color/red</item>
-    </style>
-    <style name="decision_card_button.agree.checked">
-        <item name="android:textColor">@color/whiteBg</item>
-        <item name="android:background">@color/green</item>
-    </style>
-    <style name="decision_card_button.disagree.checked">
-        <item name="android:textColor">@color/whiteBg</item>
-        <item name="android:background">@color/red</item>
     </style>
 
 </resources>
