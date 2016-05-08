@@ -1,5 +1,7 @@
 package moe.akagi.chibaproject.network;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -19,6 +21,8 @@ import java.util.Map;
  * Created by yunze on 3/2/16.
  */
 public class Utils {
+    private static Context context = null;
+    private static String sCookie = null;
     private static final String urlPre = "http://133.130.111.101:9001";
 
     public static JSONObject getJsonObjectFromMap(Map params) throws JSONException {
@@ -32,7 +36,6 @@ public class Utils {
     }
 
     public static void configConnection(HttpURLConnection connection) throws ProtocolException {
-        //CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
         connection.setConnectTimeout(5000);
         connection.setDoOutput(true);
         connection.setDoInput(true);
@@ -43,12 +46,14 @@ public class Utils {
     }
 
     public static String submitPostData(String pos, String data) throws IOException {
-
-        //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites().detectNetwork().penaltyLog().build());
+        if (sCookie == null) initCookie();
 
         URL url = new URL(urlPre + pos);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         configConnection(connection);
+        if (sCookie != null && sCookie.length()>0) {
+            connection.setRequestProperty("Cookie", sCookie);
+        }
         connection.connect();
 
         // Send data
@@ -68,5 +73,39 @@ public class Utils {
         String res = sb.toString();
         Log.v("res", res);
         return res;
+    }
+
+    public static void setContext(Context context) {
+        Utils.context = context;
+    }
+
+    private static void initCookie() {
+
+        SharedPreferences pref = context.getSharedPreferences("AppData", Context.MODE_PRIVATE);
+        if (pref.getString("cookie", null) != null) {
+            sCookie = pref.getString("cookie", null);
+            return;
+        } else {
+
+            try {
+                URL url = new URL(urlPre);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                configConnection(connection);
+                connection.connect();
+                String cookie = connection.getHeaderField("set-cookie");
+                if (cookie != null && cookie.length() > 0) {
+                    sCookie = cookie;
+                }
+                connection.disconnect();
+
+                SharedPreferences.Editor editor = context.getSharedPreferences("AppData", Context.MODE_PRIVATE).edit();
+                editor.putString("cookie", sCookie);
+                editor.apply();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 }

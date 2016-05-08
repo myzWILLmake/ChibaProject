@@ -8,6 +8,7 @@ import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
 import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.User;
+import moe.akagi.chibaproject.network.Utils;
 
 /**
  * Created by yunze on 12/2/15.
@@ -30,5 +31,6 @@ public class MyApplication extends Application {
             editor.apply();
         }
 
+        Utils.setContext(getApplicationContext());
     }
 }
