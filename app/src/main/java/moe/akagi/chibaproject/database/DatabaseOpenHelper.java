@@ -40,7 +40,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     private static final String CREATE_PARTIN = "CREATE TABLE part_in (" +
             "id         integer PRIMARY KEY AUTOINCREMENT," +
             "event_id   integer NOT NULL," +
-            "usr_id    integer NOU NULL)";
+            "usr_id    integer NOT NULL)";
 
     private static final String CREATE_LAUNCH = "CREATE TABLE launch (" +
             "id         integer PRIMARY KEY AUTOINCREMENT," +
