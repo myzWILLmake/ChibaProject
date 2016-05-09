@@ -37,7 +37,6 @@ import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Location;
 import moe.akagi.chibaproject.datatype.Time;
-import moe.akagi.chibaproject.datatype.Vote;
 import moe.akagi.chibaproject.dialog.DateDialogAdapter;
 import moe.akagi.chibaproject.dialog.DatePickerUtil;
 import moe.akagi.chibaproject.dialog.LocationDialogAdapter;
@@ -289,7 +288,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
                     tEvent.setTime(Long.valueOf(content));
                     break;
                 case Decision.TYPE_LOCA:
-                    tEvent.setLocation(content);
+                    tEvent.setPlace(content);
                     break;
             }
             API.updateEventByDecision(tDecision);

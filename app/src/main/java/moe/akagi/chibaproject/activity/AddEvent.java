@@ -384,7 +384,8 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         eventTmp.setTitle(title);
         eventTmp.setTime(timeLong);
         eventTmp.setTimeStat(timeStat);
-        eventTmp.setLocation(location.getInfo());
+        eventTmp.setPlace(location.getInfo());
+        eventTmp.setLocation(location);
         int eventId = API.insertEvent(eventTmp);
         API.insertPartInPersons(eventId, selectedFriends);
         API.insertLaunchEvent(managerId, eventId);

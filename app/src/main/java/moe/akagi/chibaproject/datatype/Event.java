@@ -19,7 +19,8 @@ public class Event implements Serializable{
     private String title;
     private long time;
     private boolean timeStat;
-    private String location;
+    private Location location;
+    private String place;
     private List<String> memberIds;
     private int state;
     private List<String> decisionIds;
@@ -69,11 +70,19 @@ public class Event implements Serializable{
         this.timeStat = timeStat;
     }
 
-    public String getLocation() {
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
