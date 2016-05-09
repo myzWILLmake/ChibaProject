@@ -24,8 +24,8 @@ android {
 
 dependencies {
     /*
-    Add cardslib support
-     */
+        Add cardslib support
+         */
     //Core
     compile 'com.github.gabrielemariotti.cards:cardslib-core:2.1.0'
     //Optional for built-in cards
@@ -36,27 +36,22 @@ dependencies {
     compile 'com.github.gabrielemariotti.cards:cardslib-extra-staggeredgrid:2.1.0'
     //Optional for drag and drop
     compile 'com.github.gabrielemariotti.cards:cardslib-extra-dragdrop:2.1.0'
-
     /*
-    Add recyclerview support
-     */
-
+        Add recyclerview support
+         */
     compile 'com.android.support:recyclerview-v7:21.0.3'
-
     /*
-    Add FontAwesome support through android-iconify
-     */
+        Add FontAwesome support through android-iconify
+         */
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.1.1'
-
     compile 'de.hdodenhof:circleimageview:2.0.0'
-
     /*
-    Add floating action button with floating actions menu supported
-     */
+        Add floating action button with floating actions menu supported
+         */
     compile 'com.getbase:floatingactionbutton:1.10.1'
-
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.android.support:design:23.1.1'
+    compile files('libs/BaiduLBS_Android.jar')
 }
