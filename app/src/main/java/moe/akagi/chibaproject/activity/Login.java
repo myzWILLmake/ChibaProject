@@ -91,11 +91,6 @@ public class Login extends Activity {
                 Log.v("login", user.getNickname());
                 Log.v("login", user.getPhone());
                 MyApplication.user = user;
-                /*SharedPreferences.Editor editor = getSharedPreferences("AppData", MODE_PRIVATE).edit();
-                editor.putBoolean("logged", true);
-                editor.putString("phone", phone);
-                editor.putString("password", password);
-                editor.apply();*/
                 return LOGIN_SUCC;
             } else if (res instanceof Integer) {
                 return (Integer)res;

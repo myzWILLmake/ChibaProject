@@ -47,6 +47,24 @@ public class API {
         return null;
     }
 
+    public static boolean logOut(String _id) {
+        try {
+            String res = Utils.submitPostData("/auth/logout", "");
+            JSONObject jsonObj = new JSONObject(res);
+            if (jsonObj.has("error")) {
+               return false;
+            } else {
+                return true;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static Object getPartInEventsByPersonId(String _id) {
         try {
             JSONObject jsonObj = new JSONObject();

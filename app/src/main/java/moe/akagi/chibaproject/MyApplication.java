@@ -30,7 +30,5 @@ public class MyApplication extends Application {
             editor.putBoolean("init", true);
             editor.apply();
         }
-
-        Utils.setContext(getApplicationContext());
     }
 }

@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
@@ -36,6 +37,7 @@ import moe.akagi.chibaproject.card.EventBriefInfo;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.User;
 import moe.akagi.chibaproject.network.API;
+import moe.akagi.chibaproject.network.Utils;
 
 /**
  * Created by yunze on 11/30/15.
@@ -99,17 +101,6 @@ public class Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityCollector.addActivity(this);
         initLayout();
-        /*SharedPreferences pref = getSharedPreferences("AppData", MODE_PRIVATE);
-        if (!pref.getBoolean("logged", false)) {
-            Intent intent = new Intent(Main.this, Login.class);
-            startActivityForResult(intent, LOGIN_ACTIVITY);
-        } else {
-            String phone = pref.getString("phone", null);
-            String password = pref.getString("password", null);
-            MyApplication.user = API.getUserByAuth(phone, password);
-            refreshUserInfo();
-            createCardList();
-        }*/
         if (MyApplication.user == null) {
             Intent intent = new Intent(Main.this, Login.class);
             startActivityForResult(intent, LOGIN_ACTIVITY);
@@ -210,14 +201,8 @@ public class Main extends AppCompatActivity {
                         startActivityForResult(intentFriend, FRIEND_ACTIVITY);
                         break;
                     case R.id.navi_item_logout:
-                        SharedPreferences.Editor editor = getSharedPreferences("AppData", MODE_PRIVATE).edit();
-                        editor.putBoolean("logged", false);
-                        editor.putString("phone", null);
-                        editor.putString("password", null);
-                        editor.apply();
-                        MyApplication.user = null;
-                        Intent intentLogout = new Intent(Main.this, Login.class);
-                        startActivityForResult(intentLogout, LOGIN_ACTIVITY);
+                        LogoutTask logoutTask = new LogoutTask();
+                        logoutTask.execute(MyApplication.user.get_id());
                         break;
                 }
                 return false;
@@ -326,6 +311,7 @@ public class Main extends AppCompatActivity {
                     EventBriefInfo card = new EventBriefInfo(getContext(), event);
                     cards.add(card);
                     synchronized (lock) {
+                        Log.v("taskCount", "num = " + taskCount);
                         if (taskCount == MyApplication.user.getPartInEventIds().size()) {
                             refreshCardList();
                         }
@@ -347,6 +333,27 @@ public class Main extends AppCompatActivity {
                 }
             }
 
+        }
+    }
+
+    private class LogoutTask extends AsyncTask<String, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            return API.logOut(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean res) {
+            if (res) {
+                MyApplication.user = null;
+                Intent intentLogout = new Intent(Main.this, Login.class);
+                startActivityForResult(intentLogout, LOGIN_ACTIVITY);
+                return;
+            } else {
+                Toast.makeText(Main.this, "注销失败", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
     }
 }

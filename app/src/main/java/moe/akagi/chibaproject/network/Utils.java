@@ -46,7 +46,6 @@ public class Utils {
     }
 
     public static String submitPostData(String pos, String data) throws IOException {
-        if (sCookie == null) initCookie();
 
         URL url = new URL(urlPre + pos);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -62,6 +61,12 @@ public class Utils {
         output.flush();
         output.close();
 
+        // check Cookie
+        String cookie = connection.getHeaderField("set-cookie");
+        if (cookie != null && !cookie.equals(sCookie)) {
+            sCookie = cookie;
+        }
+
         // Respond
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder sb = new StringBuilder();
@@ -75,37 +80,9 @@ public class Utils {
         return res;
     }
 
-    public static void setContext(Context context) {
+    public static void initCookie(Context context) {
+
         Utils.context = context;
-    }
 
-    private static void initCookie() {
-
-        SharedPreferences pref = context.getSharedPreferences("AppData", Context.MODE_PRIVATE);
-        if (pref.getString("cookie", null) != null) {
-            sCookie = pref.getString("cookie", null);
-            return;
-        } else {
-
-            try {
-                URL url = new URL(urlPre);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                configConnection(connection);
-                connection.connect();
-                String cookie = connection.getHeaderField("set-cookie");
-                if (cookie != null && cookie.length() > 0) {
-                    sCookie = cookie;
-                }
-                connection.disconnect();
-
-                SharedPreferences.Editor editor = context.getSharedPreferences("AppData", Context.MODE_PRIVATE).edit();
-                editor.putString("cookie", sCookie);
-                editor.apply();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
 }
