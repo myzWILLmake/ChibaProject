@@ -11,8 +11,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
+import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.User;
 import moe.akagi.chibaproject.network.API;
 
@@ -66,6 +71,13 @@ public class Login extends Activity {
         }
     }
 
+    private void finishLogin() {
+        Intent intent = new Intent();
+        intent.putExtra("login_succeed", true);
+        setResult(RESULT_OK, intent);
+        ActivityCollector.removeActivity(Login.this);
+    }
+
     private class LoginTask extends AsyncTask<String, Integer, Integer> {
 
         public static final int LOGIN_SUCC = 100;
@@ -106,10 +118,8 @@ public class Login extends Activity {
             switch (result) {
                 case LOGIN_SUCC:
                     Toast.makeText(Login.this, "登录成功!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent();
-                    intent.putExtra("login_succeed", true);
-                    setResult(RESULT_OK, intent);
-                    ActivityCollector.removeActivity(Login.this);
+                    FriendsTask friendsTask = new FriendsTask();
+                    friendsTask.execute(MyApplication.user.get_id());
                     break;
                 case LOGIN_FAIL_LOGGED:
                     Toast.makeText(Login.this, "已经登陆了啊?", Toast.LENGTH_SHORT).show();
@@ -126,6 +136,66 @@ public class Login extends Activity {
                     break;
             }
         }
+    }
+
+    private int friendTaskCount = 0;
+    private Map<String, Person> friendMap;
+    private Object lock = new Object();
+
+    private class FriendsTask extends AsyncTask<String, Integer, List> {
+
+        @Override
+        protected List doInBackground(String... params) {
+            String _id = params[0];
+            Object obj = API.getFriendsByPersonId(_id);
+            if (obj != null && obj instanceof List) {
+                return (List)obj;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List list) {
+            if (list != null) {
+                friendMap = new HashMap<>();
+                List<String> friendIds = (List<String>) list;
+                friendTaskCount = friendIds.size();
+                for (String friendId : friendIds) {
+                    PersonTask personTask = new PersonTask();
+                    personTask.execute(friendId);
+                }
+            }
+        }
+
+        private class PersonTask extends AsyncTask<String, Integer, Person> {
+
+            @Override
+            protected Person doInBackground(String... params) {
+                String _id = params[0];
+                Object obj = API.getUserById(_id);
+                if (obj instanceof Person) {
+                    Person person = (Person) obj;
+                    return person;
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Person person) {
+                if (person!=null) {
+                    friendMap.put(person.get_id(), person);
+                }
+                synchronized (lock) {
+                    friendTaskCount--;
+                    if (friendTaskCount == 0) {
+                        MyApplication.user.setFriendsMap(friendMap);
+                        finishLogin();
+                    }
+                }
+            }
+        }
+
+
     }
 }
 

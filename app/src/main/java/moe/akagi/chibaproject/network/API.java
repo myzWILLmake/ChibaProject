@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import moe.akagi.chibaproject.datatype.Event;
+import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.User;
 
 /**
@@ -63,6 +64,54 @@ public class API {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static Object getFriendsByPersonId(String _id) {
+        try {
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("_id", _id);
+            String res = Utils.submitPostData("/friend/id", jsonObj.toString());
+            jsonObj = new JSONObject(res);
+            if (jsonObj.has("error")) {
+                int state = jsonObj.getInt("error");
+                return Integer.valueOf(state);
+            }
+            List<String> list = new ArrayList<String>();
+            JSONArray array = jsonObj.getJSONArray("friends");
+            for (int i=0; i<array.length(); i++) {
+                String s = array.getString(i);
+                list.add(s);
+            }
+            return list;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Object getUserById(String _id) {
+        try {
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("_id", _id);
+            String res = Utils.submitPostData("/person/id", jsonObj.toString());
+            jsonObj = new JSONObject(res);
+            if (jsonObj.has("error")) {
+                int state = jsonObj.getInt("error");
+                return Integer.valueOf(state);
+            }
+            Person person = new Person();
+            person.set_id(jsonObj.getString("_id"));
+            person.setPhone(jsonObj.getString("phone"));
+            person.setNickname(jsonObj.getString("nickname"));
+            return person;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static Object getPartInEventsByPersonId(String _id) {

@@ -25,16 +25,6 @@ public class Utils {
     private static String sCookie = null;
     private static final String urlPre = "http://133.130.111.101:9001";
 
-    public static JSONObject getJsonObjectFromMap(Map params) throws JSONException {
-        Iterator iter = params.entrySet().iterator();
-        JSONObject holder = new JSONObject();
-        while (iter.hasNext()) {
-            Map.Entry pairs = (Map.Entry)iter.next();
-            holder.put((String) pairs.getKey(), pairs.getValue());
-        }
-        return holder;
-    }
-
     public static void configConnection(HttpURLConnection connection) throws ProtocolException {
         connection.setConnectTimeout(5000);
         connection.setDoOutput(true);

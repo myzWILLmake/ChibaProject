@@ -2,6 +2,7 @@ package moe.akagi.chibaproject.card;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,12 +12,15 @@ import java.util.Date;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
+import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
-import moe.akagi.chibaproject.database.API;
+//import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.database.Data;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.Time;
+import moe.akagi.chibaproject.network.API;
+import moe.akagi.chibaproject.network.Utils;
 
 /**
  * Created by yunze on 12/2/15.
@@ -95,11 +99,13 @@ public class EventInfo extends Card {
     }
 
     public String getImageId() {
-        Person manager = API.getPersonByPersonId(event.getManegerId());
-        String resString = "profile_image_" + manager.getPhone();
+        String resString;
+        if (!MyApplication.user.get_id().equals(event.getManager_id())) {
+            Person manager = MyApplication.user.getFriendsMap().get(event.getManager_id());
+            resString = "profile_image_" + manager.getPhone();
+        } else {
+            resString = "profile_image_" + MyApplication.user.getPhone();
+        }
         return resString;
     }
-
-
-
 }
