@@ -7,7 +7,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
@@ -15,7 +17,6 @@ import it.gmariotti.cardslib.library.view.CardListView;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.card.FriendCardListItem;
-import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.User;
 
@@ -54,13 +55,12 @@ public class AllFriends extends AppCompatActivity {
 
     private void createCardList() {
         User user = MyApplication.user;
-        user.setFriendIds(API.getFriendsByPersonId(user.getId()));
+        List<Card> cards = new ArrayList<Card>();
+        Iterator it = user.getFriendsMap().entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            Person person = (Person)pair.getValue();
 
-        ArrayList<Card> cards = new ArrayList<Card>();
-
-        List<String> friendIds = MyApplication.user.getFriendIds();
-        for (String friendId : friendIds) {
-            Person person = API.getPersonByPersonId(Integer.parseInt(friendId));
             FriendCardListItem card = new FriendCardListItem(this);
             String resString = "profile_image_" + person.getPhone();
             int resId = getResources().getIdentifier(resString, "drawable", getPackageName());
