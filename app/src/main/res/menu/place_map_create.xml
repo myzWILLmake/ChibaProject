@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="moe.akagi.chibaproject.activity.PlaceMapCreate">
+    <item
+        android:id="@+id/map_action_search"
+        android:title="立即搜索" />
+    <item
+        android:id="@+id/map_search_radius"
+        android:title="搜索半径" >
+        <menu>
+            <item
+                android:id="@+id/map_search_radius_set_500"
+                android:title="500米" />
+            <item
+                android:id="@+id/map_search_radius_set_1000"
+                android:title="1000米" />
+            <item
+                android:id="@+id/map_search_radius_set_2000"
+                android:title="2000米" />
+        </menu>
+    </item>
+</menu>
