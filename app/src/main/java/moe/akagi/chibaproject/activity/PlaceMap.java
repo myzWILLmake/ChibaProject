@@ -1,18 +1,14 @@
 package moe.akagi.chibaproject.activity;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -22,14 +18,9 @@ import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.InfoWindow;
-import com.baidu.mapapi.map.MapStatusUpdate;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
-import com.baidu.mapapi.model.LatLng;
 
 import moe.akagi.chibaproject.R;
 
@@ -44,16 +35,18 @@ abstract public class PlaceMap extends AppCompatActivity {
     BDLocationListener bListener;
     BDLocation bCurrentLocation = null;
     MyOrientationListener myOrientationListener;
+    int mLayoutRes;
+    int mMapviewRes;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext());
         bLocationClient = new LocationClient(getApplicationContext());
-        setContentView(R.layout.place_display);
+        setContentView(mLayoutRes);
 
         // Init map
-        bView = (MapView) findViewById(R.id.map_view_display);
+        bView = (MapView) findViewById(mMapviewRes);
         bMap = bView.getMap();
         bMap.setMyLocationEnabled(true);
         bIconMarker = BitmapDescriptorFactory.fromResource(R.drawable.icon_gcoding);
@@ -62,7 +55,12 @@ abstract public class PlaceMap extends AppCompatActivity {
         initOrientationListener();
     }
 
-    abstract class MyLocationListener implements BDLocationListener {
+    void initLayout(int layoutRes,int mapViewRes) {
+        this.mLayoutRes = layoutRes;
+        this.mMapviewRes = mapViewRes;
+    }
+
+    class MyLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(BDLocation bLocation) {
             bCurrentLocation = bLocation;

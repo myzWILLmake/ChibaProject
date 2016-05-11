@@ -14,7 +14,6 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
@@ -27,8 +26,11 @@ import moe.akagi.chibaproject.datatype.Location;
  */
 public class PlaceMapDisplay extends PlaceMap{
     Location mLocation;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        initLayout(R.layout.place_map_display,R.id.map_view_display);
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         mLocation = (Location)intent.getSerializableExtra("location");
