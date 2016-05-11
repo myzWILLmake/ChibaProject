@@ -19,6 +19,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote"></service>
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="wZxmUkr6zqL8VBs8GTOSmyuP41veHFAI" />
@@ -35,7 +36,8 @@
         <activity android:name=".activity.AddEvent"/>
         <activity android:name=".activity.AllFriends"/>
         <activity android:name=".activity.EventDetail" />
-        <activity android:name=".activity.PlaceDisplay" />
+        <activity android:name=".activity.PlaceMapDisplay" />
+        <activity android:name=".activity.PlaceMapCreate" />
     </application>
 
 </manifest>
