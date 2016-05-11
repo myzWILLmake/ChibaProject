@@ -10,36 +10,59 @@ import java.io.Serializable;
  */
 public class Location implements Serializable{
     private String info;
-    private GeoPoint point = null;
+    private int radius;
+    private int direction;
+    private double latitude;
+    private double longtitude;
 
     public Location(){
         this.info = "";
     }
-    public Location(String info){
+    public Location(String info, int radius, int direction, double latitude, double longtitude) {
         this.info = info;
-    }
-    public Location(String info,double latitude, double longtitude) {
-        this.info = info;
-        this.point = new GeoPoint(latitude * 1E6, longtitude * 1E6);
+        this.radius = radius;
+        this.direction = direction;
+        this.latitude = latitude;
+        this.longtitude = longtitude;
     }
 
     public String getInfo() {
         return info;
     }
 
+    public int getRadius() {
+        return radius;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongtitude() {
+        return longtitude;
+    }
+
     public void setInfo(String info) {
         this.info = info;
     }
 
-    public GeoPoint getPoint() {
-        return point;
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 
-    public void setPoint(GeoPoint point) {
-        this.point = point;
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
-    public void setPoint(double latitude, double longtitude) {
-        this.point = new GeoPoint(latitude * 1E6, longtitude * 1E6);
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongtitude(double longtitude) {
+        this.longtitude = longtitude;
     }
 }
