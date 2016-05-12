@@ -2,6 +2,7 @@ package moe.akagi.chibaproject.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -26,7 +27,9 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import moe.akagi.chibaproject.datatype.Event;
@@ -38,11 +41,12 @@ import moe.akagi.chibaproject.dialog.TimeDialogAdapter;
 import moe.akagi.chibaproject.dialog.TimePickerUtil;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
-import moe.akagi.chibaproject.database.API;
+//import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Location;
 import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.datatype.User;
+import moe.akagi.chibaproject.network.API;
 
 /**
  * Created by yunze on 12/7/15.
@@ -57,7 +61,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
     private ListView friendsListView;
 
     public List<String> selectedFriends = null;
-    public List<String> friends = null;
+    public List<String> partInPeople = null;
 
     private List<HashMap<String, Object>> itemList = null;
     private FriendAdapter adapter;
@@ -70,7 +74,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
             public CircleImageView circleImageView = null;
             public TextView textview = null;
             public AppCompatCheckBox checkbox= null;
-            public int personId = -1;
+            public String personId = null;
         }
 
         public static HashMap<Integer, Boolean> isSelected;
@@ -108,9 +112,8 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
             result = new ArrayList<>();
             for (int i=0; i<isSelected.size(); i++) {
                 if (isSelected.get(i)) {
-                    int pid = (int)list.get(i).get(keyString[3]);
-                    String pidStr = Integer.toString(pid);
-                    result.add(pidStr);
+                    String p_id = (String)list.get(i).get(keyString[3]);
+                    result.add(p_id);
                 }
             }
             return result;
@@ -149,7 +152,6 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
                         } else {
                             isSelected.put(position, false);
                         }
-                        Log.d("OK", "After state:" + checkbox.isChecked() + " position: " + position + " isSelected? " + isSelected.get(position));
                     }
                 });
                 convertView.setTag(holder);
@@ -162,11 +164,11 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
                 String resName = "profile_image_" + phone;
                 resId = context.getResources().getIdentifier(resName, "drawable", context.getPackageName());
                 nickname = (String) map.get(keyString[1]);
-                int pid = (int) map.get(keyString[3]);
+                String p_id = (String) map.get(keyString[3]);
 
                 holder.circleImageView.setImageResource(resId);
                 holder.textview.setText(nickname);
-                holder.personId = pid;
+                holder.personId = p_id;
             }
             holder.checkbox.setChecked(isSelected.get(position));
             return convertView;
@@ -265,11 +267,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_event_toolbar_submit:
-                if (createEvent()) {
-                    Intent intent = new Intent();
-                    setResult(RESULT_OK, intent);
-                    ActivityCollector.removeActivity(this);
-                }
+                createEvent();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -296,10 +294,12 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
 
     private void initFriendItems() {
         itemList = new ArrayList<HashMap<String, Object>>();
-        friends = API.getFriendsByPersonId(user.getId());
-        for (String friend : friends) {
-            Person person = API.getPersonByPersonId(Integer.parseInt(friend));
-            int pid = person.getId();
+        Iterator it = user.getFriendsMap().entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            Person person = (Person)pair.getValue();
+            Log.v("PERSON", person.get_id());
+            String p_id = person.get_id();
             String phone = person.getPhone();
             String nickname = person.getNickname();
 
@@ -307,7 +307,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
             map.put("item_image", phone);
             map.put("item_nickname", nickname);
             map.put("item_checkbox", false);
-            map.put("item_id", pid);
+            map.put("item_id", p_id);
 
             itemList.add(map);
         }
@@ -361,9 +361,9 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
             return false;
         }
         selectedFriends = adapter.selectedIds();
-        int managerId = user.getId();
-        List<String> partInPerons = selectedFriends;
-        partInPerons.add(Integer.toString(managerId));
+        String manager_id = user.get_id();
+        partInPeople = new ArrayList<String>(selectedFriends);
+        partInPeople.add(manager_id);
 
         boolean timeStat = true;
         Time dateAndTime = new Time(new Date(0));
@@ -380,14 +380,124 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         }
         long timeLong = dateAndTime.formatLong();
         Event eventTmp = new Event();
-        eventTmp.setManegerId(managerId);
+        eventTmp.setManager_id(manager_id);
         eventTmp.setTitle(title);
         eventTmp.setTime(timeLong);
         eventTmp.setTimeStat(timeStat);
         eventTmp.setLocation(location.getInfo());
-        int eventId = API.insertEvent(eventTmp);
-        API.insertPartInPersons(eventId, selectedFriends);
-        API.insertLaunchEvent(managerId, eventId);
+        AddEventTask addEventTask = new AddEventTask();
+        addEventTask.execute(eventTmp);
         return true;
+    }
+
+    private void backMainAActivity() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        ActivityCollector.removeActivity(this);
+    }
+
+    private class AddEventTask extends AsyncTask<Event, Integer, String> {
+
+        private Object lock = new Object();
+        private int taskNum = 0;
+
+        @Override
+        protected String doInBackground(Event... params) {
+            Event evt = params[0];
+            Object res = API.addEvent(evt);
+            if (res instanceof String) {
+                return (String)res;
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s == null) {
+                Toast.makeText(AddEvent.this, "添加事件失败", Toast.LENGTH_SHORT).show();
+            } else {
+                taskNum = 2;
+                String _id = s;
+                AddPartInPersonTask addPartInPersonTask = new AddPartInPersonTask();
+                List<String> params = new ArrayList<>(partInPeople);
+                params.add(_id);
+                addPartInPersonTask.execute(params);
+
+                AddLaunchEvent addLaunchEvent = new AddLaunchEvent();
+                addLaunchEvent.execute(user.get_id(), _id);
+            }
+
+        }
+
+        private class AddPartInPersonTask extends AsyncTask<List, Integer, Integer> {
+
+            private final int FAILED_SOMETHING_WRONG = 110;
+            private final int FAILED_NETWORK_ERROR = 111;
+            private final int SUCC = 1;
+
+            @Override
+            protected Integer doInBackground(List... params) {
+                List<String> args = params[0];
+                String evt_id = args.get(args.size() - 1);
+                args.remove(args.size() - 1);
+                int res = API.addPartInPerson(evt_id, args);
+                return res;
+            }
+
+            @Override
+            protected void onPostExecute(Integer integer) {
+                switch (integer) {
+                    case FAILED_NETWORK_ERROR:
+                        Toast.makeText(AddEvent.this, "添加参与人员失败,网络错误", Toast.LENGTH_SHORT).show();
+                    case FAILED_SOMETHING_WRONG:
+                        Toast.makeText(AddEvent.this, "添加参与人员失败,貌似是服务器开小差", Toast.LENGTH_SHORT).show();
+                        break;
+                    case SUCC:
+                        synchronized (lock) {
+                            taskNum--;
+                            if (taskNum == 0) {
+                                backMainAActivity();
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        private class AddLaunchEvent extends AsyncTask<String, Integer, Integer> {
+
+            private final int FAILED_SOMETHING_WRONG = 110;
+            private final int FAILED_NETWORK_ERROR = 111;
+            private final int SUCC = 1;
+
+
+            @Override
+            protected Integer doInBackground(String... params) {
+                String usr_id = params[0];
+                String evt_id = params[1];
+                int res = API.addLaunchEvent(usr_id, evt_id);
+                return res;
+            }
+
+            @Override
+            protected void onPostExecute(Integer integer) {
+                switch (integer) {
+                    case FAILED_SOMETHING_WRONG:
+                        Toast.makeText(AddEvent.this, "添加创建事件关系失败,貌似是服务器开小差", Toast.LENGTH_SHORT).show();
+                        break;
+                    case FAILED_NETWORK_ERROR:
+                        Toast.makeText(AddEvent.this, "添加创建事件关系失败,网络错误", Toast.LENGTH_SHORT).show();
+                        break;
+                    case SUCC:
+                        synchronized (lock) {
+                            taskNum--;
+                            if (taskNum == 0) {
+                                backMainAActivity();
+                            }
+                        }
+                }
+            }
+        }
     }
 }

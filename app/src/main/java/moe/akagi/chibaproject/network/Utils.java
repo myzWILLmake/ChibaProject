@@ -36,6 +36,7 @@ public class Utils {
     }
 
     public static String submitPostData(String pos, String data) throws IOException {
+        Log.v("req", data);
 
         URL url = new URL(urlPre + pos);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();

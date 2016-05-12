@@ -169,4 +169,74 @@ public class API {
         }
         return null;
     }
+
+    public static Object addEvent(Event evt) {
+        try {
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("manager", evt.getManager_id());
+            jsonObj.put("title", evt.getTitle());
+            jsonObj.put("time", evt.getTime());
+            jsonObj.put("time_stat", evt.isTimeStat());
+            jsonObj.put("location", evt.getLocation());
+            jsonObj.put("state", evt.getState());
+            String res = Utils.submitPostData("/event/new", jsonObj.toString());
+            jsonObj = new JSONObject(res);
+            if (jsonObj.has("error")) {
+                int state = jsonObj.getInt("error");
+                return Integer.valueOf(state);
+            }
+            String _id = jsonObj.getString("_id");
+            return _id;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int addPartInPerson(String evt_id, List<String> people) {
+        try {
+            JSONObject jsonObj = new JSONObject();
+            JSONArray peopleJson = new JSONArray(people);
+            jsonObj.put("_id", evt_id);
+            jsonObj.put("partin", peopleJson);
+            Log.v("RES", jsonObj.toString());
+            String res = Utils.submitPostData("/event/new/partin", jsonObj.toString());
+            jsonObj = new JSONObject(res);
+            if (jsonObj.has("error")) {
+                int state = jsonObj.getInt("error");
+                return state;
+            }
+            int state = jsonObj.getInt("state");
+            return state;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 111;
+    }
+
+    public static int addLaunchEvent(String usr_id, String evt_id) {
+        try {
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("usr_id", usr_id);
+            jsonObj.put("evt_id", evt_id);
+            String res = Utils.submitPostData("/person/launch", jsonObj.toString());
+            jsonObj = new JSONObject(res);
+            if (jsonObj.has("error")) {
+                int state = jsonObj.getInt("error");
+                return state;
+            }
+            int state = jsonObj.getInt("state");
+            return state;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 111;
+    }
+
 }
