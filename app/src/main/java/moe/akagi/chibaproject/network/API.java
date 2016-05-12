@@ -158,7 +158,11 @@ public class API {
             event.setTitle(jsonObj.getString("title"));
             event.setTime(jsonObj.getLong("time"));
             event.setTimeStat(jsonObj.getBoolean("time_stat"));
-            event.setLocation(jsonObj.getString("location"));
+            if (jsonObj.has("location")) {
+                event.setLocation(jsonObj.getString("location"));
+            } else {
+                event.setLocation(null);
+            }
             event.setState(jsonObj.getInt("state"));
             event.setMemberIds(null);
             return event;
@@ -201,7 +205,6 @@ public class API {
             JSONArray peopleJson = new JSONArray(people);
             jsonObj.put("_id", evt_id);
             jsonObj.put("partin", peopleJson);
-            Log.v("RES", jsonObj.toString());
             String res = Utils.submitPostData("/event/new/partin", jsonObj.toString());
             jsonObj = new JSONObject(res);
             if (jsonObj.has("error")) {
