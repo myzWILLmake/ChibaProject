@@ -4,10 +4,11 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import it.gmariotti.cardslib.library.internal.Card;
 import moe.akagi.chibaproject.R;
-import moe.akagi.chibaproject.activity.PlaceDisplay;
+import moe.akagi.chibaproject.activity.PlaceMapCreate;
+import moe.akagi.chibaproject.activity.PlaceMapDisplay;
 import moe.akagi.chibaproject.datatype.Event;
+import moe.akagi.chibaproject.datatype.Location;
 
 /**
  * Created by a15 on 12/11/15.
@@ -29,7 +30,8 @@ public class EventDetailInfo extends EventInfo {
         showMapText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PlaceDisplay.actionStart(v.getContext(),location);
+//                PlaceMapDisplay.actionStart(v.getContext(),new Location("Test Location",40,30,30.27,120.132));
+                PlaceMapCreate.actionStart(v.getContext());
             }
         });
     }
