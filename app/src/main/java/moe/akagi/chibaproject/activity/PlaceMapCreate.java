@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -46,7 +47,7 @@ public class PlaceMapCreate extends PlaceMap {
     int mSearchRadius = 500;
     PoiSearch mPoiSearch;
     List<BitmapDescriptor> poiMarkList = new ArrayList<>();
-    Location mLocationSelected;
+    MyPoiLocation mLocationSelected;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -81,10 +82,35 @@ public class PlaceMapCreate extends PlaceMap {
                     Toast.makeText(this, "还没有选定地点哦", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case R.id.map_action_detail:
+                if(mLocationSelected != null){
+                    mPoiSearch.searchPoiDetail(new PoiDetailSearchOption()
+                            .poiUid(mLocationSelected.getUid())
+                    );
+                }else{
+                    Toast.makeText(this, "还没有选定地点哦", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
         return true;
     }
 
+    class MyPoiLocation extends Location implements Serializable{
+        String uid;
+
+        MyPoiLocation(String uid, String name, double latitude, double longtitude) {
+            super(name,latitude,longtitude);
+            this.uid = uid;
+        }
+
+        public String getUid() {
+            return uid;
+        }
+
+        public void setUid(String uid) {
+            this.uid = uid;
+        }
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         initLayout(R.layout.place_map_create,R.id.map_view_create);
@@ -115,12 +141,12 @@ public class PlaceMapCreate extends PlaceMap {
                 for (int i = 0; i < poiResult.getAllPoi().size(); i ++) {
                     PoiInfo poiInfo = poiResult.getAllPoi().get(i);
                     Bundle poiBundle = new Bundle();
-                    poiBundle.putSerializable("location",new Location(
+                    poiBundle.putSerializable("location",new MyPoiLocation(
+                            poiInfo.uid,
                             poiInfo.name,
                             poiInfo.location.latitude,
                             poiInfo.location.longitude
                     ));
-                    poiBundle.putSerializable("uid",poiInfo.uid);
                     OverlayOptions markerOverlayOptions = new MarkerOptions()
                             .icon(poiMarkList.get(i))
                             .position(poiInfo.location)
@@ -131,7 +157,9 @@ public class PlaceMapCreate extends PlaceMap {
 
             @Override
             public void onGetPoiDetailResult(PoiDetailResult poiDetailResult) {
-                Log.d("Detail", poiDetailResult.getName());
+                Uri uri = Uri.parse(poiDetailResult.getDetailUrl());
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
             }
         };
         mPoiSearch = PoiSearch.newInstance();
@@ -144,7 +172,7 @@ public class PlaceMapCreate extends PlaceMap {
         bMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                mLocationSelected = (Location) marker.getExtraInfo().get("location");
+                mLocationSelected = (MyPoiLocation) marker.getExtraInfo().get("location");
                 Point point = bMap.getProjection().toScreenLocation(marker.getPosition());
                 point.y -= 10;
                 LatLng llInfo = bMap.getProjection().fromScreenLocation(point);
@@ -161,9 +189,6 @@ public class PlaceMapCreate extends PlaceMap {
                         1
                 );
                 bMap.showInfoWindow(infoWindow);
-                mPoiSearch.searchPoiDetail(new PoiDetailSearchOption()
-                        .poiUid(marker.getExtraInfo().getString("uid"))
-                );
                 return true;
             }
         });

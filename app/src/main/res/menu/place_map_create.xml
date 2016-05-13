@@ -21,6 +21,9 @@
         </menu>
     </item>
     <item
+        android:id="@+id/map_action_detail"
+        android:title="显示详情" />
+    <item
         android:id="@+id/map_action_choose"
         android:title="就是你了" />
 </menu>
