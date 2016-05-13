@@ -1,14 +1,10 @@
 package moe.akagi.chibaproject.activity;
 
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -18,11 +14,15 @@ import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.model.LatLng;
 
 import moe.akagi.chibaproject.R;
+import moe.akagi.chibaproject.datatype.Location;
 
 /**
  * Created by sinkerine on 5/9/16.
@@ -33,14 +33,15 @@ abstract public class PlaceMap extends AppCompatActivity {
     BitmapDescriptor bIconMarker;
     LocationClient bLocationClient;
     BDLocationListener bListener;
-    BDLocation bCurrentLocation = null;
-    MyOrientationListener myOrientationListener;
+    LatLng llCurrentLocation;
+    Boolean firstLocated = true;
     int mLayoutRes;
     int mMapviewRes;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityCollector.addActivity(this);
         SDKInitializer.initialize(getApplicationContext());
         bLocationClient = new LocationClient(getApplicationContext());
         setContentView(mLayoutRes);
@@ -49,10 +50,9 @@ abstract public class PlaceMap extends AppCompatActivity {
         bView = (MapView) findViewById(mMapviewRes);
         bMap = bView.getMap();
         bMap.setMyLocationEnabled(true);
-        bIconMarker = BitmapDescriptorFactory.fromResource(R.drawable.icon_gcoding);
+        bIconMarker = BitmapDescriptorFactory.fromResource(R.drawable.icon_geo);
         initLocationConfig();
         initMarkerClickEvent();
-        initOrientationListener();
     }
 
     void initLayout(int layoutRes,int mapViewRes) {
@@ -63,87 +63,27 @@ abstract public class PlaceMap extends AppCompatActivity {
     class MyLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(BDLocation bLocation) {
-            bCurrentLocation = bLocation;
-            refreshMapLocation();
+            llCurrentLocation = new LatLng(bLocation.getLatitude(), bLocation.getLongitude());
+            if (firstLocated == true) {
+                refreshLocation(bLocation);
+                firstLocated = false;
+            }
         }
     }
-    public static class MyOrientationListener implements SensorEventListener
-    {
 
-        private Context context;
-        private SensorManager sensorManager;
-        private Sensor sensor;
-
-        private float lastX ;
-
-        private OnOrientationListener onOrientationListener ;
-
-        public MyOrientationListener(Context context)
-        {
-            this.context = context;
-        }
-
-        // 开始
-        public void start()
-        {
-            // 获得传感器管理器
-            sensorManager = (SensorManager) context
-                    .getSystemService(Context.SENSOR_SERVICE);
-            if (sensorManager != null)
-            {
-                // 获得方向传感器
-                sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-            }
-            // 注册
-            if (sensor != null)
-            {//SensorManager.SENSOR_DELAY_UI
-                sensorManager.registerListener(this, sensor,
-                        SensorManager.SENSOR_DELAY_UI);
-            }
-
-        }
-
-        // 停止检测
-        public void stop()
-        {
-            sensorManager.unregisterListener(this);
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy)
-        {
-
-        }
-
-        @Override
-        public void onSensorChanged(SensorEvent event)
-        {
-            // 接受方向感应器的类型
-            if (event.sensor.getType() == Sensor.TYPE_ORIENTATION)
-            {
-                // 这里我们可以得到数据，然后根据需要来处理
-                float x = event.values[SensorManager.DATA_X];
-
-                if( Math.abs(x- lastX) > 1.0 )
-                {
-                    onOrientationListener.onOrientationChanged(x);
-                }
-//            Log.e("DATA_X", x+"");
-                lastX = x ;
-
-            }
-        }
-
-        public void setOnOrientationListener(OnOrientationListener onOrientationListener)
-        {
-            this.onOrientationListener = onOrientationListener ;
-        }
-
-
-        public interface OnOrientationListener
-        {
-            void onOrientationChanged(float x);
-        }
+    void refreshLocation(BDLocation bLocation) {
+        MyLocationData locData = new MyLocationData.Builder()
+                .accuracy(bLocation.getRadius())
+                // 此处设置开发者获取到的方向信息，顺时针0-360
+                .direction(bLocation.getDirection())
+                .latitude(bLocation.getLatitude())
+                .longitude(bLocation.getLongitude()).build();
+        // 设置定位数据
+        bMap.setMyLocationData(locData);
+        // 设置自定义图标
+        MyLocationConfiguration config = new MyLocationConfiguration(
+                MyLocationConfiguration.LocationMode.COMPASS, true, bIconMarker);
+        bMap.setMyLocationConfigeration(config);
     }
 
     void initLocationConfig(){
@@ -167,42 +107,11 @@ abstract public class PlaceMap extends AppCompatActivity {
     void initMarkerClickEvent(){
     }
 
-    void initOrientationListener() {
-        myOrientationListener = new MyOrientationListener(
-                getApplicationContext());
-        myOrientationListener
-                .setOnOrientationListener(new MyOrientationListener.OnOrientationListener()
-                {
-                    @Override
-                    public void onOrientationChanged(float x)
-                    {
-                        // 构造定位数据
-                        if (bCurrentLocation != null) {
-                            refreshMapLocation();
-                        }
-                    }
-                });
-    }
-
-    void refreshMapLocation() {
-        MyLocationData locData = new MyLocationData.Builder()
-                .accuracy(bCurrentLocation.getRadius())
-                // 此处设置开发者获取到的方向信息，顺时针0-360
-                .direction(bCurrentLocation.getDirection())
-                .latitude(bCurrentLocation.getLatitude())
-                .longitude(bCurrentLocation.getLongitude()).build();
-        // 设置定位数据
-        bMap.setMyLocationData(locData);
-        // 设置自定义图标
-        MyLocationConfiguration config = new MyLocationConfiguration(
-                MyLocationConfiguration.LocationMode.COMPASS, true, null);
-        bMap.setMyLocationConfigeration(config);
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         bView.onDestroy();
+        ActivityCollector.removeActivity(this);
     }
 
     @Override

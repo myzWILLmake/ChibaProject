@@ -27,6 +27,20 @@ import moe.akagi.chibaproject.datatype.Location;
 public class PlaceMapDisplay extends PlaceMap{
     Location mLocation;
 
+    class MylocationDisplayListener extends MyLocationListener {
+        @Override
+        public void onReceiveLocation(BDLocation bLocation) {
+            super.onReceiveLocation(bLocation);
+            LatLng llPlace = new LatLng(mLocation.getLatitude(), mLocation.getLongtitude());
+            double distance = DistanceUtil.getDistance(llCurrentLocation,llPlace);
+            Log.d("Test disrance: ", String.valueOf(distance));
+            Toast.makeText(
+                    getApplicationContext(),
+                    "您和集合地点的距离是: " + String.format("%1f", distance) + " 米",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +54,7 @@ public class PlaceMapDisplay extends PlaceMap{
 
         // Mark current Location
         Bundle infoBundle = new Bundle();
-        infoBundle.putSerializable("info",mLocation);
+        infoBundle.putSerializable("name",mLocation.getName());
         OverlayOptions markerOverlayOptions = new MarkerOptions()
                 .icon(bIconMarker)
                 .position(new LatLng(mLocation.getLatitude(), mLocation.getLongtitude()))
@@ -48,20 +62,6 @@ public class PlaceMapDisplay extends PlaceMap{
         bMap.addOverlay(markerOverlayOptions);
     }
 
-    class MylocationDisplayListener extends MyLocationListener {
-        @Override
-        public void onReceiveLocation(BDLocation bLocation) {
-            super.onReceiveLocation(bLocation);
-            LatLng p = new LatLng(mLocation.getLatitude(), mLocation.getLongtitude());
-            double distance = DistanceUtil.getDistance(new LatLng(bCurrentLocation.getLatitude(),bCurrentLocation.getLongitude()),p);
-            Log.d("Test disrance: ", String.valueOf(distance));
-            Toast.makeText(
-                    getApplicationContext(),
-                    "您和集合地点的距离是: " + String.format("%1f", distance) + " 米",
-                    Toast.LENGTH_LONG
-            ).show();
-        }
-    }
 
     @Override
     void initMarkerClickEvent() {
@@ -69,14 +69,13 @@ public class PlaceMapDisplay extends PlaceMap{
         bMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Location location = (Location) marker.getExtraInfo().get("info");
                 Point point = bMap.getProjection().toScreenLocation(marker.getPosition());
                 point.y -= 10;
                 LatLng llInfo = bMap.getProjection().fromScreenLocation(point);
 
                 TextView infoText = new TextView(getApplicationContext());
                 infoText.setPadding(30,20,30,50);
-                infoText.setText(location.getInfo());
+                infoText.setText(marker.getExtraInfo().getString("name"));
                 infoText.setTextColor(getResources().getColor(R.color.black));
                 infoText.setTextSize(24);
 

@@ -1,27 +1,52 @@
 package moe.akagi.chibaproject.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.location.Poi;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapPoi;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
+import com.baidu.mapapi.search.poi.PoiDetailResult;
+import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
+import com.baidu.mapapi.search.poi.PoiNearbySearchOption;
+import com.baidu.mapapi.search.poi.PoiResult;
+import com.baidu.mapapi.search.poi.PoiSearch;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import moe.akagi.chibaproject.R;
+import moe.akagi.chibaproject.datatype.Location;
 
 /**
  * Created by sinkerine on 5/11/16.
  */
 public class PlaceMapCreate extends PlaceMap {
     int mSearchRadius = 500;
+    PoiSearch mPoiSearch;
+    List<BitmapDescriptor> poiMarkList = new ArrayList<>();
+    Location mLocationSelected;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,6 +70,17 @@ public class PlaceMapCreate extends PlaceMap {
             case R.id.map_action_search:
                 searchAround();
                 break;
+            case R.id.map_action_choose:
+                if(mLocationSelected != null){
+                    Intent resIntent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("location", mLocationSelected);
+                    setResult(Activity.RESULT_OK,resIntent);
+                    super.onBackPressed();
+                }else{
+                    Toast.makeText(this, "还没有选定地点哦", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
         return true;
     }
@@ -57,18 +93,94 @@ public class PlaceMapCreate extends PlaceMap {
         bLocationClient.registerLocationListener(bListener);
         bLocationClient.start();
 
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark1));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark2));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark3));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark4));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark5));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark6));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark7));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark8));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark9));
+        poiMarkList.add(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark10));
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.place_map_create_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        OnGetPoiSearchResultListener poiSearchResultListener = new OnGetPoiSearchResultListener() {
+            @Override
+            public void onGetPoiResult(PoiResult poiResult) {
+                bMap.clear();
+                for (int i = 0; i < poiResult.getAllPoi().size(); i ++) {
+                    PoiInfo poiInfo = poiResult.getAllPoi().get(i);
+                    Bundle poiBundle = new Bundle();
+                    poiBundle.putSerializable("location",new Location(
+                            poiInfo.name,
+                            poiInfo.location.latitude,
+                            poiInfo.location.longitude
+                    ));
+                    poiBundle.putSerializable("uid",poiInfo.uid);
+                    OverlayOptions markerOverlayOptions = new MarkerOptions()
+                            .icon(poiMarkList.get(i))
+                            .position(poiInfo.location)
+                            .extraInfo(poiBundle);
+                    bMap.addOverlay(markerOverlayOptions);
+                }
+            }
+
+            @Override
+            public void onGetPoiDetailResult(PoiDetailResult poiDetailResult) {
+                Log.d("Detail", poiDetailResult.getName());
+            }
+        };
+        mPoiSearch = PoiSearch.newInstance();
+        mPoiSearch.setOnGetPoiSearchResultListener(poiSearchResultListener);
+    }
+
+    @Override
+    void initMarkerClickEvent() {
+        super.initMarkerClickEvent();
+        bMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                mLocationSelected = (Location) marker.getExtraInfo().get("location");
+                Point point = bMap.getProjection().toScreenLocation(marker.getPosition());
+                point.y -= 10;
+                LatLng llInfo = bMap.getProjection().fromScreenLocation(point);
+
+                TextView infoText = new TextView(getApplicationContext());
+                infoText.setPadding(30,20,30,50);
+                infoText.setText(mLocationSelected.getName());
+                infoText.setTextColor(getResources().getColor(R.color.black));
+                infoText.setTextSize(24);
+
+                InfoWindow infoWindow = new InfoWindow(
+                        infoText,
+                        llInfo,
+                        1
+                );
+                bMap.showInfoWindow(infoWindow);
+                mPoiSearch.searchPoiDetail(new PoiDetailSearchOption()
+                        .poiUid(marker.getExtraInfo().getString("uid"))
+                );
+                return true;
+            }
+        });
+    }
+
+    void searchAround(){
+        mPoiSearch.searchNearby(new PoiNearbySearchOption()
+                .keyword("美食")
+                .location(llCurrentLocation)
+                .pageCapacity(10)
+                .pageNum(1)
+                .radius(mSearchRadius)
+        );
     }
 
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, PlaceMapCreate.class);
         context.startActivity(intent);
     }
-
-    void searchAround(){
-        Log.d("Test Bar: ", String.valueOf(mSearchRadius));
-    }
-
 }
