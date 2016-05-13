@@ -1,33 +1,37 @@
 package moe.akagi.chibaproject.datatype;
 
-import com.baidu.mapapi.model.inner.GeoPoint;
-import com.google.repacked.apache.commons.codec.binary.Base64;
-
 import java.io.Serializable;
 
 /**
  * Created by yunze on 12/1/15.
  */
 public class Location implements Serializable{
-    private String info;
-    private int radius;
-    private int direction;
-    private double latitude;
-    private double longtitude;
+    String name;
+    int radius;
+    int direction;
+    double latitude;
+    double longtitude;
 
     public Location(){
-        this.info = "";
+        this.name = "";
     }
-    public Location(String info, int radius, int direction, double latitude, double longtitude) {
-        this.info = info;
+
+    public Location(String name, double latitude, double longtitude) {
+        this.name = name;
+        this.latitude = latitude;
+        this.longtitude = longtitude;
+    }
+
+    public Location(String name, int radius, int direction, double latitude, double longtitude) {
+        this.name = name;
         this.radius = radius;
         this.direction = direction;
         this.latitude = latitude;
         this.longtitude = longtitude;
     }
 
-    public String getInfo() {
-        return info;
+    public String getName() {
+        return name;
     }
 
     public int getRadius() {
@@ -46,8 +50,8 @@ public class Location implements Serializable{
         return longtitude;
     }
 
-    public void setInfo(String info) {
-        this.info = info;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setRadius(int radius) {

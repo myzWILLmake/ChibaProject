@@ -188,7 +188,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
 
         date.setYear(-1);
         time.setHour(-1);
-        location.setInfo(null);
+        location.setName(null);
 
         selectedFriends = new ArrayList<String>();
         friendsListView = (ListView) findViewById(R.id.add_event_friend_list);
@@ -227,11 +227,11 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (location.getInfo() == null) {
+                if (location.getName() == null) {
                     LocationDialogUtil locationDialogUtil = new LocationDialogUtil(AddEvent.this, AddEvent.this, "");
                     locationDialogUtil.locationDialog(location);
                 } else {
-                    LocationDialogUtil locationDialogUtil = new LocationDialogUtil(AddEvent.this, AddEvent.this, location.getInfo());
+                    LocationDialogUtil locationDialogUtil = new LocationDialogUtil(AddEvent.this, AddEvent.this, location.getName());
                     locationDialogUtil.locationDialog(location);
                 }
             }
@@ -345,10 +345,10 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
     public void refreshLocationInfo() {
         TextView locationTextView = (TextView) findViewById(R.id.add_event_location);
         String locationStr;
-        if (location.getInfo() == null) {
+        if (location.getName() == null) {
             locationStr = "待定";
         } else {
-            locationStr = location.getInfo();
+            locationStr = location.getName();
         }
         locationTextView.setText(locationStr);
     }
@@ -384,7 +384,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         eventTmp.setTitle(title);
         eventTmp.setTime(timeLong);
         eventTmp.setTimeStat(timeStat);
-        eventTmp.setPlace(location.getInfo());
+        eventTmp.setPlace(location.getName());
         eventTmp.setLocation(location);
         int eventId = API.insertEvent(eventTmp);
         API.insertPartInPersons(eventId, selectedFriends);
