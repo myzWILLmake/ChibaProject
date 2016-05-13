@@ -20,4 +20,7 @@
                 android:title="2000米" />
         </menu>
     </item>
+    <item
+        android:id="@+id/map_action_choose"
+        android:title="就是你了" />
 </menu>
