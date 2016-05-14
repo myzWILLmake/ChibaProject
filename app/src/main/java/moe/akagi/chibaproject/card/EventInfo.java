@@ -1,12 +1,12 @@
 package moe.akagi.chibaproject.card;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.joanzapata.iconify.widget.IconTextView;
 
 import java.util.Date;
 
@@ -14,9 +14,9 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
-//import moe.akagi.chibaproject.database.API;
-import moe.akagi.chibaproject.database.Data;
+import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Event;
+import moe.akagi.chibaproject.datatype.Location;
 import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.network.API;
@@ -30,10 +30,12 @@ public class EventInfo extends Card {
     protected Context mContext;
     protected CardHeader header;
     protected Event event;
+    protected Location location;
 
     protected ImageView infoImage;
     protected TextView timeText;
     protected TextView placeText;
+    protected IconTextView showMapText;
 
     protected int timeViewId;
     protected int placeViewId;
@@ -53,6 +55,7 @@ public class EventInfo extends Card {
         timeText = (TextView) parent.findViewById(this.timeViewId);
         placeText = (TextView) parent.findViewById(this.placeViewId);
         infoImage = (ImageView) parent.findViewById(this.imageViewId);
+        showMapText = (IconTextView) parent.findViewById(R.id.show_map_text);
         Context context = parent.getContext();
 
         header.setTitle(getTitle());
@@ -91,7 +94,7 @@ public class EventInfo extends Card {
     }
 
     public String getPlace() {
-        String place = event.getLocation();
+        String place = event.getPlace();
         if (place == null || place.isEmpty()) {
             place = "地点待定";
         }

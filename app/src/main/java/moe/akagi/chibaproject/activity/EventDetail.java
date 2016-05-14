@@ -37,7 +37,6 @@ import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Location;
 import moe.akagi.chibaproject.datatype.Time;
-import moe.akagi.chibaproject.datatype.Vote;
 import moe.akagi.chibaproject.dialog.DateDialogAdapter;
 import moe.akagi.chibaproject.dialog.DatePickerUtil;
 import moe.akagi.chibaproject.dialog.LocationDialogAdapter;
@@ -122,7 +121,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
         date.setHour(-1);
         time.setHour(-1);
-        location.setInfo(null);
+        location.setName(null);
 
         //judge admin
         if (MyApplication.user.getPhone().equals(API.getPersonByPersonId(event.getManegerId()).getPhone())) {
@@ -289,7 +288,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
                     tEvent.setTime(Long.valueOf(content));
                     break;
                 case Decision.TYPE_LOCA:
-                    tEvent.setLocation(content);
+                    tEvent.setPlace(content);
                     break;
             }
             API.updateEventByDecision(tDecision);
@@ -338,12 +337,12 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     @Override
     public void refreshLocationInfo() {
         // To do: add decision location type card
-        if (location.getInfo() != null) {
+        if (location.getName() != null) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
             decision.setSponsorId(MyApplication.user.getId());
             decision.setType(Decision.TYPE_LOCA);
-            decision.setContent(location.getInfo());
+            decision.setContent(location.getName());
             decision.setAgreePersonNum(0);
             decision.setRejectPersonNum(0);
             API.insertDecision(decision);

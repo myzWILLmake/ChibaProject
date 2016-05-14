@@ -7,7 +7,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import moe.akagi.chibaproject.R;
-import moe.akagi.chibaproject.activity.AddEvent;
 import moe.akagi.chibaproject.datatype.Location;
 
 /**
@@ -42,14 +41,14 @@ public class LocationDialogUtil {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String location = locationEditText.getText().toString();
-                        loc.setInfo(location);
+                        loc.setName(location);
                         locationDialogAdapter.refreshLocationInfo();
                     }
                 })
                 .setNegativeButton("待定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        loc.setInfo(null);
+                        loc.setName(null);
                         locationDialogAdapter.refreshLocationInfo();
                     }
                 })

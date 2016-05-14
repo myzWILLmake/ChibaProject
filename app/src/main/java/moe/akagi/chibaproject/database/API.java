@@ -168,7 +168,7 @@ public class API {
                     event.setTimeStat(true);
                 else
                     event.setTimeStat(false);
-                event.setLocation(location);
+                event.setPlace(location);
                 event.setState(state);
                 event.setMemberIds(null);
             } while (cursor.moveToNext());
@@ -215,7 +215,7 @@ public class API {
         int managerId = event.getManegerId();
         String title = event.getTitle();
         long time = event.getTime();
-        String location = event.getLocation();
+        String location = event.getPlace();
         int timeStat;
         if (event.isTimeStat()) {
             timeStat = 1;
