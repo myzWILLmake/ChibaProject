@@ -168,7 +168,7 @@ public class API {
                     event.setTimeStat(true);
                 else
                     event.setTimeStat(false);
-                event.setPlace(location);
+                //event.setPlace(location);
                 event.setState(state);
                 event.setMemberIds(null);
             } while (cursor.moveToNext());

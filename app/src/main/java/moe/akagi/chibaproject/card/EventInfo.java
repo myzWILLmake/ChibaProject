@@ -14,13 +14,10 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
-import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Location;
 import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.Time;
-import moe.akagi.chibaproject.network.API;
-import moe.akagi.chibaproject.network.Utils;
 
 /**
  * Created by yunze on 12/2/15.
@@ -94,7 +91,7 @@ public class EventInfo extends Card {
     }
 
     public String getPlace() {
-        String place = event.getPlace();
+        String place = event.getLocation().getName();
         if (place == null || place.isEmpty()) {
             place = "地点待定";
         }

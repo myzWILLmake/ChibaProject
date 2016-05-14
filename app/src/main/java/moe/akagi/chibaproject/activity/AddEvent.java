@@ -51,7 +51,9 @@ import moe.akagi.chibaproject.network.API;
 /**
  * Created by yunze on 12/7/15.
  */
-public class AddEvent extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter, LocationDialogAdapter {
+public class AddEvent extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter {
+
+    private final static int PLACEMAPCREATE_ACTIVITY = 1;
 
     User user;
     Time date;
@@ -176,6 +178,20 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PLACEMAPCREATE_ACTIVITY:
+                if (resultCode == RESULT_OK) {
+                    location = (Location)data.getSerializableExtra("location");
+                    Toast.makeText(AddEvent.this, "Test " + location.getName(), Toast.LENGTH_SHORT).show();
+                } else {
+                    location.setName("待定");
+                }
+                break;
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityCollector.addActivity(this);
@@ -229,13 +245,15 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (location.getName() == null) {
+                /*if (location.getName() == null) {
                     LocationDialogUtil locationDialogUtil = new LocationDialogUtil(AddEvent.this, AddEvent.this, "");
                     locationDialogUtil.locationDialog(location);
                 } else {
                     LocationDialogUtil locationDialogUtil = new LocationDialogUtil(AddEvent.this, AddEvent.this, location.getName());
                     locationDialogUtil.locationDialog(location);
-                }
+                }*/
+                Intent intent = new Intent(AddEvent.this, PlaceMapCreate.class);
+                startActivityForResult(intent, PLACEMAPCREATE_ACTIVITY);
             }
         });
     }
@@ -341,7 +359,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         timeTextView.setText(timeStr);
     }
 
-    @Override
+    /*@Override
     public void refreshLocationInfo() {
         TextView locationTextView = (TextView) findViewById(R.id.add_event_location);
         String locationStr;
@@ -351,7 +369,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
             locationStr = location.getName();
         }
         locationTextView.setText(locationStr);
-    }
+    }*/
 
     private boolean createEvent() {
         EditText titleEditText = (EditText) findViewById(R.id.add_event_title);
@@ -384,7 +402,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         eventTmp.setTitle(title);
         eventTmp.setTime(timeLong);
         eventTmp.setTimeStat(timeStat);
-        eventTmp.setLocation(location.getInfo());
+        eventTmp.setLocation(location);
         AddEventTask addEventTask = new AddEventTask();
         addEventTask.execute(eventTmp);
         return true;

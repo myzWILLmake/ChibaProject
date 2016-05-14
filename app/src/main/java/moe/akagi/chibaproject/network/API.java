@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import moe.akagi.chibaproject.datatype.Event;
+import moe.akagi.chibaproject.datatype.Location;
 import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.User;
 
@@ -159,7 +160,14 @@ public class API {
             event.setTime(jsonObj.getLong("time"));
             event.setTimeStat(jsonObj.getBoolean("time_stat"));
             if (jsonObj.has("location")) {
-                event.setLocation(jsonObj.getString("location"));
+                JSONObject locationObj = jsonObj.getJSONObject("location");
+                String name = locationObj.getString("name");
+                int radius = locationObj.getInt("radius");
+                int direction = locationObj.getInt("direction");
+                double latitude = locationObj.getDouble("latitude");
+                double longtitude = locationObj.getDouble("longtitude");
+                Location locationTmp = new Location(name, radius, direction, latitude, longtitude);
+                event.setLocation(locationTmp);
             } else {
                 event.setLocation(null);
             }
@@ -181,7 +189,18 @@ public class API {
             jsonObj.put("title", evt.getTitle());
             jsonObj.put("time", evt.getTime());
             jsonObj.put("time_stat", evt.isTimeStat());
-            jsonObj.put("location", evt.getLocation());
+            Location locationTmp = evt.getLocation();
+            JSONObject locationObj = new JSONObject();
+            {
+                locationObj.put("name", locationTmp.getName());
+                locationObj.put("radius", locationTmp.getRadius());
+                locationObj.put("direction", locationTmp.getDirection());
+                locationObj.put("latitude", locationTmp.getLatitude());
+                locationObj.put("longtitude", locationTmp.getLongtitude());
+            }
+            jsonObj.put("location", locationObj);
+            //jsonObj.put("location", evt.getLocation());
+
             jsonObj.put("state", evt.getState());
             String res = Utils.submitPostData("/event/new", jsonObj.toString());
             jsonObj = new JSONObject(res);

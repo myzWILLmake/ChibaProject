@@ -76,6 +76,7 @@ public class PlaceMapCreate extends PlaceMap {
                     Intent resIntent = new Intent();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("location", mLocationSelected);
+                    resIntent.putExtras(bundle);
                     setResult(Activity.RESULT_OK,resIntent);
                     super.onBackPressed();
                 }else{
@@ -203,9 +204,9 @@ public class PlaceMapCreate extends PlaceMap {
                 .radius(mSearchRadius)
         );
     }
-
+    /*
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, PlaceMapCreate.class);
         context.startActivity(intent);
-    }
+    }*/
 }
