@@ -1,25 +1,30 @@
 package moe.akagi.chibaproject.datatype;
 
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
+
 import java.io.Serializable;
+
+import moe.akagi.chibaproject.BR;
+
 
 /**
  * Created by yunze on 12/1/15.
  */
-public class Location implements Serializable{
-    String name;
+public class Location extends BaseObservable implements Serializable{
+    String name = "";
     int radius;
     int direction;
     double latitude;
-    double longtitude;
+    double longitude;
 
     public Location(){
-        this.name = "";
     }
 
     public Location(String name, double latitude, double longtitude) {
         this.name = name;
         this.latitude = latitude;
-        this.longtitude = longtitude;
+        this.longitude = longtitude;
     }
 
     public Location(String name, int radius, int direction, double latitude, double longtitude) {
@@ -27,9 +32,17 @@ public class Location implements Serializable{
         this.radius = radius;
         this.direction = direction;
         this.latitude = latitude;
-        this.longtitude = longtitude;
+        this.longitude = longtitude;
     }
 
+    public void copyConstruct(Location location) {
+        setName(location.name);
+        setDirection(location.direction);
+        setLatitude(location.latitude);
+        setLongitude(location.longitude);
+    }
+
+    @Bindable
     public String getName() {
         return name;
     }
@@ -46,12 +59,13 @@ public class Location implements Serializable{
         return latitude;
     }
 
-    public double getLongtitude() {
-        return longtitude;
+    public double getLongitude() {
+        return longitude;
     }
 
     public void setName(String name) {
         this.name = name;
+        notifyPropertyChanged(BR.name);
     }
 
     public void setRadius(int radius) {
@@ -66,7 +80,8 @@ public class Location implements Serializable{
         this.latitude = latitude;
     }
 
-    public void setLongtitude(double longtitude) {
-        this.longtitude = longtitude;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
+
 }
