@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -33,6 +35,8 @@ import com.baidu.mapapi.search.poi.PoiNearbySearchOption;
 import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +47,24 @@ import moe.akagi.chibaproject.datatype.Location;
 /**
  * Created by sinkerine on 5/11/16.
  */
+class MyPoiLocation extends Location implements Serializable{
+    String uid;
+
+    MyPoiLocation(String uid, String name, double latitude, double longtitude) {
+        super(name,latitude,longtitude);
+        this.uid = uid;
+    }
+
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+}
+
 public class PlaceMapCreate extends PlaceMap {
     int mSearchRadius = 500;
     PoiSearch mPoiSearch;
@@ -74,11 +96,12 @@ public class PlaceMapCreate extends PlaceMap {
             case R.id.map_action_choose:
                 if(mLocationSelected != null){
                     Intent resIntent = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("location", mLocationSelected);
-                    resIntent.putExtras(bundle);
+                    resIntent.putExtra("location", mLocationSelected);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putSerializable("location", mLocationSelected);
+//                    resIntent.putExtras(bundle);
                     setResult(Activity.RESULT_OK,resIntent);
-                    super.onBackPressed();
+                    ActivityCollector.removeActivity(this);
                 }else{
                     Toast.makeText(this, "还没有选定地点哦", Toast.LENGTH_SHORT).show();
                 }
@@ -96,22 +119,6 @@ public class PlaceMapCreate extends PlaceMap {
         return true;
     }
 
-    class MyPoiLocation extends Location implements Serializable{
-        String uid;
-
-        MyPoiLocation(String uid, String name, double latitude, double longtitude) {
-            super(name,latitude,longtitude);
-            this.uid = uid;
-        }
-
-        public String getUid() {
-            return uid;
-        }
-
-        public void setUid(String uid) {
-            this.uid = uid;
-        }
-    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         initLayout(R.layout.place_map_create,R.id.map_view_create);
