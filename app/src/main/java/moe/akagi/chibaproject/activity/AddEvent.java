@@ -2,6 +2,7 @@ package moe.akagi.chibaproject.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import moe.akagi.chibaproject.databinding.AddEventLayoutBinding;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.dialog.DateDialogAdapter;
 import moe.akagi.chibaproject.dialog.DatePickerUtil;
@@ -51,7 +53,7 @@ import moe.akagi.chibaproject.network.API;
 /**
  * Created by yunze on 12/7/15.
  */
-public class AddEvent extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter {
+public class AddEvent extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter{
 
     private final static int PLACEMAPCREATE_ACTIVITY = 1;
 
@@ -182,7 +184,7 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         switch (requestCode) {
             case PLACEMAPCREATE_ACTIVITY:
                 if (resultCode == RESULT_OK) {
-                    location = (Location)data.getSerializableExtra("location");
+                    location.copyConstruct((Location)data.getSerializableExtra("location"));
                     Toast.makeText(AddEvent.this, "Test " + location.getName(), Toast.LENGTH_SHORT).show();
                 } else {
                     location.setName("待定");
@@ -206,12 +208,15 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
 
         date.setYear(-1);
         time.setHour(-1);
-        location.setName(null);
 
         selectedFriends = new ArrayList<String>();
         friendsListView = (ListView) findViewById(R.id.add_event_friend_list);
 
         initFriendItems();
+
+        // Data binding
+        AddEventLayoutBinding binding = DataBindingUtil.setContentView(this, R.layout.add_event_layout);
+        binding.setLocation(this.location);
 
         Button timeButton = (Button) findViewById(R.id.add_event_edit_time);
         timeButton.setOnClickListener(new View.OnClickListener() {
@@ -358,18 +363,6 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         }
         timeTextView.setText(timeStr);
     }
-
-    /*@Override
-    public void refreshLocationInfo() {
-        TextView locationTextView = (TextView) findViewById(R.id.add_event_location);
-        String locationStr;
-        if (location.getName() == null) {
-            locationStr = "待定";
-        } else {
-            locationStr = location.getName();
-        }
-        locationTextView.setText(locationStr);
-    }*/
 
     private boolean createEvent() {
         EditText titleEditText = (EditText) findViewById(R.id.add_event_title);

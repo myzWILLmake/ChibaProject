@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+
+        <import type="moe.akagi.chibaproject.datatype.Location" />
+
+        <variable
+            name="location"
+            type="Location" />
+    </data>
+<RelativeLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -88,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:id="@+id/add_event_location"
-                android:text="待定"
+                android:text='@{location.name.length() == 0 ? "待定" : location.name}'
                 android:textColor="@color/black"
                 android:textSize="20sp"/>
         </RelativeLayout>
@@ -146,3 +155,4 @@
     </LinearLayout>
 
 </RelativeLayout>
+</layout>
