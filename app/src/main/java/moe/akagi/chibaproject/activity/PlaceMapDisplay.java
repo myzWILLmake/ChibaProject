@@ -31,7 +31,7 @@ public class PlaceMapDisplay extends PlaceMap{
         @Override
         public void onReceiveLocation(BDLocation bLocation) {
             super.onReceiveLocation(bLocation);
-            LatLng llPlace = new LatLng(mLocation.getLatitude(), mLocation.getLongtitude());
+            LatLng llPlace = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
             double distance = DistanceUtil.getDistance(llCurrentLocation,llPlace);
             Log.d("Test disrance: ", String.valueOf(distance));
             Toast.makeText(
@@ -57,7 +57,7 @@ public class PlaceMapDisplay extends PlaceMap{
         infoBundle.putSerializable("name",mLocation.getName());
         OverlayOptions markerOverlayOptions = new MarkerOptions()
                 .icon(bIconMarker)
-                .position(new LatLng(mLocation.getLatitude(), mLocation.getLongtitude()))
+                .position(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()))
                 .extraInfo(infoBundle);
         bMap.addOverlay(markerOverlayOptions);
     }
@@ -92,9 +92,7 @@ public class PlaceMapDisplay extends PlaceMap{
 
     public static void actionStart(Context context, Location location) {
         Intent intent = new Intent(context,PlaceMapDisplay.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("location",location);
-        intent.putExtras(bundle);
+        intent.putExtra("location", location);
         context.startActivity(intent);
     }
 

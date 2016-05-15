@@ -196,7 +196,7 @@ public class API {
                 locationObj.put("radius", locationTmp.getRadius());
                 locationObj.put("direction", locationTmp.getDirection());
                 locationObj.put("latitude", locationTmp.getLatitude());
-                locationObj.put("longtitude", locationTmp.getLongtitude());
+                locationObj.put("longtitude", locationTmp.getLongitude());
             }
             jsonObj.put("location", locationObj);
             //jsonObj.put("location", evt.getLocation());
