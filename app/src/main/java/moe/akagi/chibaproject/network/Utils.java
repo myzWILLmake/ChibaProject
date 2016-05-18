@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class Utils {
         connection.setDoInput(true);
         connection.setChunkedStreamingMode(0);
         connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
         connection.setUseCaches(false);
     }
 
@@ -48,7 +49,7 @@ public class Utils {
 
         // Send data
         DataOutputStream output = new DataOutputStream(connection.getOutputStream());
-        output.writeBytes(data);
+        output.write(data.getBytes());
         output.flush();
         output.close();
 
