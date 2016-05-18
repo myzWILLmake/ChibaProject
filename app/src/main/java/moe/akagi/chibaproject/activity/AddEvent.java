@@ -214,10 +214,6 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
 
         initFriendItems();
 
-        // Data binding
-        AddEventLayoutBinding binding = DataBindingUtil.setContentView(this, R.layout.add_event_layout);
-        binding.setLocation(this.location);
-
         Button timeButton = (Button) findViewById(R.id.add_event_edit_time);
         timeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -297,7 +293,10 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
     }
 
     private void initLayout() {
-        setContentView(R.layout.add_event_layout);
+        //setContentView(R.layout.add_event_layout);
+        // Data binding
+        AddEventLayoutBinding binding = DataBindingUtil.setContentView(AddEvent.this, R.layout.add_event_layout);
+        binding.setLocation(this.location);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.add_event_activity_toolbar);
         if (myToolbar != null) {
             setSupportActionBar(myToolbar);
