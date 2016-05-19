@@ -185,9 +185,6 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
             case PLACEMAPCREATE_ACTIVITY:
                 if (resultCode == RESULT_OK) {
                     location.copyConstruct((Location)data.getSerializableExtra("location"));
-                    Toast.makeText(AddEvent.this, "Test " + location.getName(), Toast.LENGTH_SHORT).show();
-                } else {
-                    location.setName("待定");
                 }
                 break;
         }
@@ -198,7 +195,6 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         super.onCreate(savedInstanceState);
         ActivityCollector.addActivity(this);
 
-        initLayout();
 
         user = MyApplication.user;
         Date dateTmp = new Date(0);
@@ -208,6 +204,8 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
 
         date.setYear(-1);
         time.setHour(-1);
+
+        initLayout();
 
         selectedFriends = new ArrayList<String>();
         friendsListView = (ListView) findViewById(R.id.add_event_friend_list);
@@ -293,9 +291,9 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
     }
 
     private void initLayout() {
-        //setContentView(R.layout.add_event_layout);
+//        setContentView(R.layout.add_event_layout);
         // Data binding
-        AddEventLayoutBinding binding = DataBindingUtil.setContentView(AddEvent.this, R.layout.add_event_layout);
+        AddEventLayoutBinding binding = DataBindingUtil.setContentView(this, R.layout.add_event_layout);
         binding.setLocation(this.location);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.add_event_activity_toolbar);
         if (myToolbar != null) {
