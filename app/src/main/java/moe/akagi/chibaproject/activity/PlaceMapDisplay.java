@@ -37,7 +37,7 @@ public class PlaceMapDisplay extends PlaceMap{
             Toast.makeText(
                     getApplicationContext(),
                     "您和集合地点的距离是: " + String.format("%1f", distance) + " 米",
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_SHORT
             ).show();
         }
     }
@@ -96,4 +96,9 @@ public class PlaceMapDisplay extends PlaceMap{
         context.startActivity(intent);
     }
 
+    @Override
+    protected void onDestroy() {
+        bLocationClient.stop();
+        super.onDestroy();
+    }
 }
