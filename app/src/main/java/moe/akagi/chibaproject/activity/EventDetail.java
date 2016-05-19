@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.joanzapata.iconify.IconDrawable;
@@ -48,6 +49,7 @@ import moe.akagi.chibaproject.dialog.TimePickerUtil;
  * Created by a15 on 12/12/15.
  */
 public class EventDetail extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter, LocationDialogAdapter {
+    private final static int PLACEMAPCREATE_ACTIVITY = 1;
 
     private RecyclerView memberList;
     private Event event;
@@ -121,7 +123,6 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
         date.setHour(-1);
         time.setHour(-1);
-        location.setName(null);
 
         //judge admin
         if (MyApplication.user.getPhone().equals(API.getPersonByPersonId(event.getManegerId()).getPhone())) {
@@ -132,6 +133,18 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         initLayout();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PLACEMAPCREATE_ACTIVITY:
+                if (resultCode == RESULT_OK) {
+                    location.copyConstruct((Location)data.getSerializableExtra("location"));
+                }else{
+                    Toast.makeText(this, "好像没有拿到地点诶", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -227,8 +240,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         fabLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LocationDialogUtil locationDialogUtil = new LocationDialogUtil(EventDetail.this, EventDetail.this, "");
-                locationDialogUtil.locationDialog(location);
+//                LocationDialogUtil locationDialogUtil = new LocationDialogUtil(EventDetail.this, EventDetail.this, "");
+//                locationDialogUtil.locationDialog(location);
+                Intent intent = new Intent(EventDetail.this, PlaceMapCreate.class);
+                startActivityForResult(intent, PLACEMAPCREATE_ACTIVITY);
             }
         });
     }
@@ -337,7 +352,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
     @Override
     public void refreshLocationInfo() {
         // To do: add decision location type card
-        if (location.getName() != null) {
+        if (!location.getName().isEmpty()) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
             decision.setSponsorId(MyApplication.user.getId());
