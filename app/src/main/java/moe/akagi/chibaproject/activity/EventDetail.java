@@ -3,11 +3,13 @@ package moe.akagi.chibaproject.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.ObservableBoolean;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +39,7 @@ import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.datatype.Decision;
 import moe.akagi.chibaproject.datatype.Event;
 import moe.akagi.chibaproject.datatype.Location;
+import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.dialog.DateDialogAdapter;
 import moe.akagi.chibaproject.dialog.DatePickerUtil;
@@ -48,7 +51,7 @@ import moe.akagi.chibaproject.dialog.TimePickerUtil;
 /**
  * Created by a15 on 12/12/15.
  */
-public class EventDetail extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter, LocationDialogAdapter {
+public class EventDetail extends AppCompatActivity implements DateDialogAdapter, TimeDialogAdapter{
     private final static int PLACEMAPCREATE_ACTIVITY = 1;
 
     private RecyclerView memberList;
@@ -79,11 +82,11 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
         }
 
-        public MemberAdapter(Context context, List<String> memberIds) {
+        public MemberAdapter(Context context, List<Person> members) {
             imageResourceIds = new ArrayList<>();
-            for (String member_id : memberIds) {
-                String phone = (API.getPersonByPersonId(Integer.valueOf(member_id)).getPhone());
-                int resId = context.getResources().getIdentifier("profile_image_" + phone, "drawable", context.getPackageName());
+            for (Person member : members) {
+//                String phone = (API.getPersonByPersonId(Integer.valueOf(member_id)).getPhone());
+                int resId = context.getResources().getIdentifier("profile_image_" + member.getPhone(), "drawable", context.getPackageName());
                 imageResourceIds.add(String.valueOf(resId));
             }
             this.layoutInflater = LayoutInflater.from(context);
@@ -139,6 +142,7 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             case PLACEMAPCREATE_ACTIVITY:
                 if (resultCode == RESULT_OK) {
                     location.copyConstruct((Location)data.getSerializableExtra("location"));
+                    refreshLocationInfo();
                 }else{
                     Toast.makeText(this, "好像没有拿到地点诶", Toast.LENGTH_SHORT).show();
                 }
@@ -148,12 +152,12 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (isAdmin) {
+//        if (isAdmin) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.event_detail_toolbar_menu, menu);
             return true;
-        }
-        return false;
+//        }
+//        return false;
     }
 
     @Override
@@ -172,6 +176,24 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         ActivityCollector.removeActivity(this);
     }
 
+
+    class adapterTask extends AsyncTask<String, Integer, List<Person>> {
+        @Override
+        protected List<Person> doInBackground(String... params) {
+            List<String> friendIdList = (List<String>)moe.akagi.chibaproject.network.API.getFriendsByPersonId(params[0]);
+            List<Person> personList = new ArrayList<>();
+            for(String fid: friendIdList){
+                personList.add((Person)moe.akagi.chibaproject.network.API.getUserById(fid));
+            }
+            return personList;
+        }
+
+        @Override
+        protected void onPostExecute(List<Person> persons) {
+            MemberAdapter memberAdapter = new MemberAdapter(getApplicationContext(), persons);
+            memberList.setAdapter(memberAdapter);
+        }
+    }
 
     private void initLayout() {
         setContentView(R.layout.event_layout);
@@ -201,8 +223,10 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         memberList = (RecyclerView) findViewById(R.id.event_member_list);
         memberList.setLayoutManager(layoutManager);
-        MemberAdapter memberAdapter = new MemberAdapter(this, API.getPartInPeopleByEventId(event.getId()));
-        memberList.setAdapter(memberAdapter);
+//        MemberAdapter memberAdapter = new MemberAdapter(this, API.getPartInPeopleByEventId(event.getId()));
+//        MemberAdapter memberAdapter = new MemberAdapter(this, API.getFriendsByPersonId(event.getManegerId()));
+//        memberList.setAdapter(memberAdapter);
+        new adapterTask().execute(event.getManager_id());
 
         // decisionList init
         List<String> decisionIdList = API.getDecisionsByEventId(event.getId());
@@ -302,9 +326,12 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
                 case Decision.TYPE_DATE:
                     tEvent.setTime(Long.valueOf(content));
                     break;
-                case Decision.TYPE_LOCA:
+                case Decision.TYPE_LOCA:{
+                    event.getLocation().setName(content);
+                    tEvent.setLocation(event.getLocation());
                     tEvent.setPlace(content);
                     break;
+                }
             }
             API.updateEventByDecision(tDecision);
             eventDetailCard = new EventDetailInfo(this, tEvent);
@@ -318,7 +345,6 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
     @Override
     public void refreshTimeInfo() {
-        // To do: add decision time type card
         if (time.getHour() != -1) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
@@ -327,6 +353,8 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             decision.setContent(Long.toString(time.formatLong()));
             decision.setAgreePersonNum(0);
             decision.setRejectPersonNum(0);
+            decision.setSponsorPhone(MyApplication.user.getPhone());
+            decision.setSponsorNickName(MyApplication.user.getNickname());
             API.insertDecision(decision);
             addDecisionCard(decision);
        }
@@ -334,7 +362,6 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
 
     @Override
     public void refreshDateInfo() {
-        // To do: add decision date type card
         if (date.getYear() != -1) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
@@ -343,27 +370,30 @@ public class EventDetail extends AppCompatActivity implements DateDialogAdapter,
             decision.setContent(Long.toString(date.formatLong()));
             decision.setAgreePersonNum(0);
             decision.setRejectPersonNum(0);
+            decision.setSponsorPhone(MyApplication.user.getPhone());
+            decision.setSponsorNickName(MyApplication.user.getNickname());
             API.insertDecision(decision);
             addDecisionCard(decision);
         }
-        // refreshCards();
+//         refreshCards();
     }
 
-    @Override
     public void refreshLocationInfo() {
-        // To do: add decision location type card
         if (!location.getName().isEmpty()) {
             Decision decision = new Decision();
             decision.setEventId(event.getId());
             decision.setSponsorId(MyApplication.user.getId());
             decision.setType(Decision.TYPE_LOCA);
             decision.setContent(location.getName());
+            Log.d("Test location decision", location.getName());
             decision.setAgreePersonNum(0);
             decision.setRejectPersonNum(0);
+            decision.setSponsorPhone(MyApplication.user.getPhone());
+            decision.setSponsorNickName(MyApplication.user.getNickname());
             API.insertDecision(decision);
             addDecisionCard(decision);
         }
-        // refreshCards();
+//        refreshCards();
     }
 
     public static void actionStart(Context context, Event event) {

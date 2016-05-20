@@ -30,7 +30,7 @@ public class EventDetailInfo extends EventInfo {
         showMapText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PlaceMapDisplay.actionStart(v.getContext(),new Location("Test Location",40,30,30.27,120.132));
+                PlaceMapDisplay.actionStart(v.getContext(),event.getLocation());
                 //PlaceMapCreate.actionStart(v.getContext());
             }
         });

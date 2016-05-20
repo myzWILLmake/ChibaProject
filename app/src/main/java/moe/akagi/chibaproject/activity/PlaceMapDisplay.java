@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
@@ -26,6 +28,7 @@ import moe.akagi.chibaproject.datatype.Location;
  */
 public class PlaceMapDisplay extends PlaceMap{
     Location mLocation;
+    BitmapDescriptor bTargetIcon = BitmapDescriptorFactory.fromResource(R.drawable.icon_mark1);
 
     class MylocationDisplayListener extends MyLocationListener {
         @Override
@@ -56,7 +59,7 @@ public class PlaceMapDisplay extends PlaceMap{
         Bundle infoBundle = new Bundle();
         infoBundle.putSerializable("name",mLocation.getName());
         OverlayOptions markerOverlayOptions = new MarkerOptions()
-                .icon(bIconMarker)
+                .icon(bTargetIcon)
                 .position(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()))
                 .extraInfo(infoBundle);
         bMap.addOverlay(markerOverlayOptions);

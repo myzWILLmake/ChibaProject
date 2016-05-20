@@ -195,7 +195,6 @@ public class AddEvent extends AppCompatActivity implements DateDialogAdapter, Ti
         super.onCreate(savedInstanceState);
         ActivityCollector.addActivity(this);
 
-
         user = MyApplication.user;
         Date dateTmp = new Date(0);
         date = new Time(dateTmp);

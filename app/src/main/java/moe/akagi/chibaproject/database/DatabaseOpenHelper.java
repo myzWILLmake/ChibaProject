@@ -53,6 +53,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             "usr_id     integer NOT NULL," +
             "type       integer NOT NULL," + // 0 time 1 location 2 add_person
             "content    text NOT NULL," +
+            "phone      text," +
+            "nickname      text," +
             "agree      integer DEFAULT 0," +
             "reject     integer DEFAULT 0)";
 

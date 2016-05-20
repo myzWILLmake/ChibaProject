@@ -23,6 +23,7 @@ public class API {
 
     public static void init(Context context) {
         dbHelper = new DatabaseOpenHelper(context, "db", null, 4);
+//        dbHelper.cleanUp(dbHelper.getWritableDatabase());
     }
 
     public static void initInsert() {
@@ -264,6 +265,8 @@ public class API {
         va.put("content", decision.getContent());
         va.put("agree", decision.getAgreePersonNum());
         va.put("reject", decision.getRejectPersonNum());
+        va.put("phone", decision.getSponsorPhone());
+        va.put("nickname", decision.getSponsorNickName());
         int decisionId = (int) db.insert("decision", null, va);
         va.clear();
         decision.setId(decisionId);
@@ -297,6 +300,8 @@ public class API {
                 String content = cursor.getString(cursor.getColumnIndex("content"));
                 int agreePersonNum = cursor.getInt(cursor.getColumnIndex("agree"));
                 int rejectPersonNum = cursor.getInt(cursor.getColumnIndex("reject"));
+                String phone = cursor.getString(cursor.getColumnIndex("phone"));
+                String nickName = cursor.getString(cursor.getColumnIndex("nickname"));
                 decision.setId(id);
                 decision.setEventId(eventId);
                 decision.setSponsorId(usrId);
@@ -304,6 +309,8 @@ public class API {
                 decision.setContent(content);
                 decision.setAgreePersonNum(agreePersonNum);
                 decision.setRejectPersonNum(rejectPersonNum);
+                decision.setSponsorPhone(phone);
+                decision.setSponsorNickName(nickName);
             } while (cursor.moveToNext());
         }
         cursor.close();

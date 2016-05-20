@@ -2,8 +2,8 @@ package moe.akagi.chibaproject.card;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +18,12 @@ import moe.akagi.chibaproject.MyApplication;
 import moe.akagi.chibaproject.R;
 import moe.akagi.chibaproject.activity.EventDetail;
 import moe.akagi.chibaproject.button.DecisionCardButton;
-import moe.akagi.chibaproject.database.API;
 import moe.akagi.chibaproject.databinding.DecisionCardBinding;
 import moe.akagi.chibaproject.datatype.Decision;
+import moe.akagi.chibaproject.datatype.Person;
 import moe.akagi.chibaproject.datatype.Time;
 import moe.akagi.chibaproject.datatype.Vote;
+import moe.akagi.chibaproject.network.API;
 
 /**
  * Created by a15 on 12/16/15.
@@ -31,6 +32,8 @@ public class DecisionCard extends Card{
     private Context context;
     private Decision decision;
     private int sponsorId;
+    private String sponsorPhone;
+    private String sponsorNickName;
 
     // Data binding member
     private ObservableInt agreeNum;
@@ -47,19 +50,20 @@ public class DecisionCard extends Card{
         this.context = context;
         this.decision = decision;
         sponsorId = decision.getSponsorId();
+        sponsorPhone = decision.getSponsorPhone();
+        sponsorNickName = decision.getSponsorNickName();
     }
-
 
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
         super.setupInnerViewElements(parent, view);
-        CircleImageView sponsorImage = (CircleImageView) parent.findViewById(R.id.decision_card_sponsor_image);
+        final CircleImageView sponsorImage = (CircleImageView) parent.findViewById(R.id.decision_card_sponsor_image);
         nicknameTextView  = (TextView) parent.findViewById(R.id.decision_card_sponsor_nickname);
         typeTextView = (TextView) parent.findViewById(R.id.decision_card_type);
         contentTextView = (TextView) parent.findViewById(R.id.decision_card_content);
         agreeButton = (DecisionCardButton) parent.findViewById(R.id.decision_card_agree_button);
         disagreeButton = (DecisionCardButton) parent.findViewById(R.id.decision_card_disagree_button);
-        decision = API.getDecisionById(decision.getId());
+//        decision = API.getDecisionById(decision.getId());
         this.agreeNum = new ObservableInt(decision.getAgreePersonNum());
         this.disagreeNum = new ObservableInt(decision.getRejectPersonNum());
 
@@ -108,10 +112,10 @@ public class DecisionCard extends Card{
                     if (!disagreeButton.mIsClicked()) {
                         if(!agreeButton.mIsClicked()){
                             mSetAgreeNum(mGetAgreeNum()+1);
-                            API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
+                            moe.akagi.chibaproject.database.API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
                         }else{
                             mSetAgreeNum(mGetAgreeNum()-1);
-                            API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
+                            moe.akagi.chibaproject.database.API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_AGREE));
                         }
                         agreeButton.toggleClicked();
                     }
@@ -127,10 +131,10 @@ public class DecisionCard extends Card{
                     if (!agreeButton.mIsClicked()) {
                         if(!disagreeButton.mIsClicked()){
                             mSetDisagreeNum(mGetDisagreeNum()+1);
-                            API.insertVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
+                            moe.akagi.chibaproject.database.API.insertVote(new Vote(getDecisionId(),sponsorId, Vote.TYPE_REJECT));
                         }else{
                             mSetDisagreeNum(mGetDisagreeNum()-1);
-                            API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
+                            moe.akagi.chibaproject.database.API.deleteVote(new Vote(getDecisionId(),sponsorId,Vote.TYPE_REJECT));
                         }
                         disagreeButton.toggleClicked();
                     }
@@ -139,16 +143,19 @@ public class DecisionCard extends Card{
                 }
             }
         });
+
+//        new GetSponsorTask().execute(sponsorId);
     }
 
     public void setUpViewByIsAdmin(boolean adminMode) {
         if (adminMode) {
             agreeButton.mSetClicked(false);
             disagreeButton.mSetClicked(false);
-        }else{
+        }
+        else{
             // Set up view from vote record
-            Vote vote = API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
-            if (vote != null) {
+            Vote vote = moe.akagi.chibaproject.database.API.getVoteByUsrIdDecisionId(MyApplication.user.getId(), decision.getId());
+            if (vote != null && sponsorPhone.equals(MyApplication.user.getPhone())) {
                 if (vote.getType() == Vote.TYPE_AGREE)
                     agreeButton.mSetClicked(true);
                 else if (vote.getType() == Vote.TYPE_REJECT)
@@ -158,11 +165,12 @@ public class DecisionCard extends Card{
     }
 
     public String getSponsorNickName() {
-        return API.getPersonByPersonId(sponsorId).getNickname();
+        return sponsorNickName;
     }
-
+//
+//
     public int getSponsorImageId() {
-        String resId  = "profile_image_" + API.getPersonByPersonId(sponsorId).getPhone();
+        String resId = "profile_image_" + sponsorPhone;
         return context.getResources().getIdentifier(resId, "drawable", context.getPackageName());
     }
 

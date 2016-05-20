@@ -31,6 +31,7 @@ public class User extends Person {
         this.friendIds = friendIds;
     }
 
+
     public Map<String, Person> getFriendsMap() {
         return friendsMap;
     }

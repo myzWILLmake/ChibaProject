@@ -12,6 +12,8 @@ public class Decision {
     private int id;
     private int eventId;
     private int sponsorId;
+    private String sponsorPhone;
+    private String sponsorNickName;
     private int type;
     private String content;
     private int agreePersonNum;
@@ -71,5 +73,21 @@ public class Decision {
 
     public void setRejectPersonNum(int rejectPersonNum) {
         this.rejectPersonNum = rejectPersonNum;
+    }
+
+    public String getSponsorPhone() {
+        return sponsorPhone;
+    }
+
+    public void setSponsorPhone(String sponsorPhone) {
+        this.sponsorPhone = sponsorPhone;
+    }
+
+    public void setSponsorNickName(String sponsorNickName) {
+        this.sponsorNickName = sponsorNickName;
+    }
+
+    public String getSponsorNickName() {
+        return sponsorNickName;
     }
 }
